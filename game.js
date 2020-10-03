@@ -59,12 +59,15 @@ var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
 var figure = new Image();
-figure.src = "figure.svg";
+figure.src = "assets/figure.svg";
 
-var fire = new Image();
-fire.src = "fire.svg";
+var fire1 = new Image();
+fire1.src = "assets/fire1.svg";
 
-time_since_movement = 0;
+var fire2 = new Image();
+fire2.src = "assets/fire2.svg";
+
+time_since_flip = 0;
 
 var w = 400;
 var h = 400;
@@ -72,7 +75,11 @@ var cell_w = 40;
 
 const player_position = new_position(0, 0)
 
-function update(elapsed_time) {
+
+var use_fire1 = true;
+var time_since_flip = 0;
+
+function update_player() {
   player_position.x += player_dx;
   player_position.y += player_dy;
   player_dx = player_dy = 0;
@@ -88,6 +95,14 @@ function update(elapsed_time) {
   if (player_occupies(goal_position)) {
     console.log("YOU WIN!");
     game_over = true;
+  }
+}
+
+function update_objects(elapsed_time) {
+  time_since_flip += elapsed_time;
+  if (time_since_flip >= 500) {
+    time_since_flip = 0;
+    use_fire1 = !use_fire1;
   }
 }
 
@@ -108,28 +123,28 @@ ctx.fillRect(player_position.x * cell_w, player_position.y * cell_w, cell_w, cel
 function draw() {
   ctx.clearRect(0, 0, w, h);
 
-  for (x = 0; x < w; x += cell_w) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, h);
-    ctx.stroke();
-  }
-  for (y = 0; y < h; y += cell_w) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
-    ctx.stroke();
-  }
-
   ctx.fillStyle = "#00FF00";
   ctx.fillRect(goal_position.x * cell_w, goal_position.y, cell_w, cell_w, cell_w);
 
   ctx.fillStyle = "#000000";
   traps.forEach(o => {
-    ctx.drawImage(fire, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
+    ctx.drawImage(use_fire1 ? fire1 : fire2, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
   });
 
   ctx.drawImage(figure, player_position.x * cell_w, player_position.y * cell_w, cell_w, cell_w);
+
+  for (var x = 0; x < w; x += cell_w) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+    ctx.stroke();
+  }
+  for (var y = 0; y < h; y += cell_w) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
 }
 
 var game_over = false;
@@ -138,9 +153,10 @@ function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
   if (!game_over) {
-    update(elapsed_time);
-    draw();
+    update_player();
   }
+  update_objects(elapsed_time);
+  draw();
 
   lastRender = timestamp;
   window.requestAnimationFrame(loop);
