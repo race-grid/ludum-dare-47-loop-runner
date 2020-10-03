@@ -38,23 +38,26 @@ var w = 400;
 var h = 400;
 var cell_w = 50;
 
-// This is the data for one specific map
-var game_state = new_game_state({
-    grid_w: 6,
-    grid_h: 2,
-    player_position: new_position(2, 0),
-    traps: [new_position(0, 0)],
-    obstacles: [
-      new_position(0, 1),
-      new_position(1, 1),
-      new_position(2, 1),
-      new_position(3, 1),
-      new_position(4, 1),
-      new_position(5, 1),
-    ],
-    keys_and_doors: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
-    goal_position: new_position(5, 0)
-  });
+function map_1_game_state() {
+  return new_game_state({
+      grid_w: 6,
+      grid_h: 2,
+      player_position: new_position(2, 0),
+      traps: [new_position(0, 0)],
+      obstacles: [
+        new_position(0, 1),
+        new_position(1, 1),
+        new_position(2, 1),
+        new_position(3, 1),
+        new_position(4, 1),
+        new_position(5, 1),
+      ],
+      keys_and_doors: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
+      goal_position: new_position(5, 0)
+    });
+}
+
+var game_state = map_1_game_state();
 
 function draw(game_state) {
   ctx.clearRect(0, 0, w, h);
@@ -124,7 +127,7 @@ lastRender = 0
 window.requestAnimationFrame(loop)
 
 document.getElementById("btn-reset").onclick = function (e) {
-  game_state = new_game_state();
+  game_state = map_1_game_state();
   console.log("Game was reset");
 }
 
