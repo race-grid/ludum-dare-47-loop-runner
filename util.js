@@ -1,4 +1,7 @@
-function update_character(game_state, dx, dy) {
+const TRAP_COLLISION = "__TRAP_COLLISION__";
+const GOAL_COLLISION = "__GOAL_COLLISION__";
+
+function perform_player_movement(game_state, dx, dy) {
   position = game_state.player_position;
   const next_position = new_position(position.x + dx, position.y + dy);
   if (contains_obstacle(game_state, next_position)) {
@@ -16,16 +19,14 @@ function update_character(game_state, dx, dy) {
 
   for (var i = 0; i < game_state.traps.length; i++) {
     if (character_occupies(position, game_state.traps[i])) {
-      console.log("YOU LOSE!");
       game_state.traps.splice(i, 1);
-      game_state.game_over = true;
       game_state.player_position.x = -1
       game_state.player_position.y = -1
+      return TRAP_COLLISION;
     }
   }
   if (character_occupies(position, game_state.goal_position)) {
-    console.log("YOU WIN!");
-    game_state.game_over = true;
+    return GOAL_COLLISION;
   }
 }
 

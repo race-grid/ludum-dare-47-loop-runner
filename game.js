@@ -30,6 +30,10 @@ door_image.src = "assets/door.svg"
 var flag_image = new Image();
 flag_image.src = "assets/flag.svg"
 
+var player_movement_sound = new Audio('assets/beep.mp3');
+var death_sound = new Audio('assets/explosion.mp3');
+var victory_sound = new Audio('assets/victory.mp3');
+
 var w = 400;
 var h = 400;
 var cell_w = 40;
@@ -78,8 +82,20 @@ function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
   if (!game_state.game_over) {
-    update_character(game_state, player_movement[0], player_movement[1]);
-    player_movement = [0, 0];
+    if (!(player_movement[0] == 0 && player_movement[1] == 0)) {
+      collision = perform_player_movement(game_state, player_movement[0], player_movement[1]);
+      if (collision == TRAP_COLLISION) {
+        console.log("YOU LOSE");
+        game_state.game_over = true;
+        death_sound.play();
+      } else if (collision == GOAL_COLLISION) {
+        console.log("YOU WIN");
+        game_state.game_over = true;
+        victory_sound.play();
+      }
+      player_movement_sound.play();
+      player_movement = [0, 0];
+    }
   }
   update_objects(game_state, elapsed_time);
   draw(game_state);
