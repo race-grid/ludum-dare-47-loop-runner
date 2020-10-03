@@ -61,25 +61,43 @@ var ctx = canvas.getContext("2d");
 var figure = new Image();
 figure.src = "figure.svg";
 
-player_x = 0;
-var player_y = 0;
 time_since_movement = 0;
 
 var w = 400;
 var h = 400;
 var cell_w = 40;
 
+const player_position = new_position(0, 0)
+
 function update(elapsed_time) {
-  player_x += player_dx;
-  player_y += player_dy;
+  player_position.x += player_dx;
+  player_position.y += player_dy;
   player_dx = player_dy = 0;
-//  time_since_movement += elapsed_time;
-//  if (time_since_movement >= 1000) {
-//    console.log("Moving player")
-//    time_since_movement = 0;
-//    player_x++;
-//  }
+  obstacles.forEach(o => {
+    if (player_occupies(o)) {
+      console.log("YOU LOSE!");
+      game_over = true;
+    }
+  });
+  if (player_occupies(goal_position)) {
+    console.log("YOU WIN!");
+    game_over = true;
+  }
 }
+
+function player_occupies(pos) {
+  return player_position.x == pos.x && player_position.y == pos.y;
+}
+
+var obstacles = [new_position(3, 2), new_position(5, 5)];
+
+let goal_position = new_position(5, 0);
+
+function new_position(x, y) {
+  return { "x": x, "y": y };
+}
+
+ctx.fillRect(player_position.x * cell_w, player_position.y * cell_w, cell_w, cell_w);
 
 function draw() {
   ctx.clearRect(0, 0, w, h);
@@ -96,14 +114,27 @@ function draw() {
     ctx.lineTo(w, y);
     ctx.stroke();
   }
-  ctx.drawImage(figure, player_x * cell_w, player_y * cell_w, cell_w, cell_w);
+
+  ctx.fillStyle = "#00FF00";
+  ctx.fillRect(goal_position.x * cell_w, goal_position.y, cell_w, cell_w, cell_w);
+
+  ctx.fillStyle = "#000000";
+  obstacles.forEach(o => {
+    ctx.fillRect(o.x * cell_w, o.y * cell_w, cell_w, cell_w);
+  });
+
+  ctx.drawImage(figure, player_position.x * cell_w, player_position.y * cell_w, cell_w, cell_w);
 }
 
+var game_over = false;
 
 function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
-  update(elapsed_time);
-  draw();
+
+  if (!game_over) {
+    update(elapsed_time);
+    draw();
+  }
 
   lastRender = timestamp;
   window.requestAnimationFrame(loop);
