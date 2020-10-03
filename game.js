@@ -43,7 +43,23 @@ if (!Number.isInteger(grid_w) || !Number.isInteger(grid_h)){
   console.error("Invalid grid dimensions: " + grid_w + ", " + grid_h);
 }
 
-var game_state = new_game_state(grid_w, grid_h);
+// This is the data for one specific map
+var game_state = new_game_state({
+    grid_w: grid_w,
+    grid_h: grid_h,
+    player_position: new_position(2, 0),
+    traps: [new_position(0, 0), new_position(5, 5)],
+    obstacles: [
+      new_position(0, 1),
+      new_position(1, 1),
+      new_position(2, 1),
+      new_position(3, 1),
+      new_position(4, 1),
+      new_position(5, 1),
+    ],
+    keys_and_doors: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
+    goal_position: new_position(5, 0)
+  });
 
 function draw(game_state) {
   ctx.clearRect(0, 0, w, h);
