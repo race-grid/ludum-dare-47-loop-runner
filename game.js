@@ -61,6 +61,9 @@ var ctx = canvas.getContext("2d");
 var figure = new Image();
 figure.src = "figure.svg";
 
+var fire = new Image();
+fire.src = "fire.svg";
+
 time_since_movement = 0;
 
 var w = 400;
@@ -73,7 +76,7 @@ function update(elapsed_time) {
   player_position.x += player_dx;
   player_position.y += player_dy;
   player_dx = player_dy = 0;
-  obstacles.forEach(o => {
+  traps.forEach(o => {
     if (player_occupies(o)) {
       console.log("YOU LOSE!");
       game_over = true;
@@ -89,7 +92,7 @@ function player_occupies(pos) {
   return player_position.x == pos.x && player_position.y == pos.y;
 }
 
-var obstacles = [new_position(3, 2), new_position(5, 5)];
+var traps = [new_position(3, 2), new_position(5, 5)];
 
 let goal_position = new_position(5, 0);
 
@@ -119,8 +122,8 @@ function draw() {
   ctx.fillRect(goal_position.x * cell_w, goal_position.y, cell_w, cell_w, cell_w);
 
   ctx.fillStyle = "#000000";
-  obstacles.forEach(o => {
-    ctx.fillRect(o.x * cell_w, o.y * cell_w, cell_w, cell_w);
+  traps.forEach(o => {
+    ctx.drawImage(fire, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
   });
 
   ctx.drawImage(figure, player_position.x * cell_w, player_position.y * cell_w, cell_w, cell_w);
