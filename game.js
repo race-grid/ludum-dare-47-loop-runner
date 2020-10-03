@@ -58,14 +58,23 @@ document.onkeyup = INPUT.onkeyup;
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 
-var figure = new Image();
-figure.src = "assets/figure.svg";
+var figure_image = new Image();
+figure_image.src = "assets/figure.svg";
 
-var fire1 = new Image();
-fire1.src = "assets/fire1.svg";
+var fire1_image = new Image();
+fire1_image.src = "assets/fire1.svg";
 
-var fire2 = new Image();
-fire2.src = "assets/fire2.svg";
+var fire2_image = new Image();
+fire2_image.src = "assets/fire2.svg";
+
+var key_image = new Image();
+key_image.src = "assets/key.svg"
+
+var door_image = new Image();
+door_image.src = "assets/door.svg"
+
+var flag_image = new Image();
+flag_image.src = "assets/flag.svg"
 
 time_since_flip = 0;
 
@@ -87,6 +96,12 @@ function update_character(position, dx, dy) {
   position.x = next_position.x;
   position.y = next_position.y;
 
+  for (var i = 0; i < keys_and_doors.length; i++) {
+    if (character_occupies(position, keys_and_doors[i].key)) {
+      keys_and_doors.splice(i, 1);
+    }
+  }
+
   for (var i = 0; i < traps.length; i++) {
     if (character_occupies(position, traps[i])) {
       console.log("YOU LOSE!");
@@ -105,6 +120,11 @@ function update_character(position, dx, dy) {
 function contains_obstacle(position) {
   for (var i = 0; i < obstacles.length; i++) {
     if (character_occupies(position, obstacles[i])) {
+      return true;
+    }
+  }
+  for (var i = 0; i < keys_and_doors.length; i++) {
+    if (character_occupies(position, keys_and_doors[i].door)) {
       return true;
     }
   }
@@ -132,7 +152,7 @@ var obstacles = [
   new_position(4, 1),
   new_position(5, 1),
 ];
-
+var keys_and_doors = [{ "key": new_position(1, 0), "door": new_position(4, 0) }]
 let goal_position = new_position(5, 0);
 
 function new_position(x, y) {
@@ -144,19 +164,23 @@ ctx.fillRect(player_position.x * cell_w, player_position.y * cell_w, cell_w, cel
 function draw() {
   ctx.clearRect(0, 0, w, h);
 
-  ctx.fillStyle = "#00FF00";
-  ctx.fillRect(goal_position.x * cell_w, goal_position.y, cell_w, cell_w, cell_w);
+  ctx.drawImage(flag_image, (goal_position.x + .1) * cell_w, (goal_position.y + .1) * cell_w, cell_w * .8, cell_w * .9);
 
   ctx.fillStyle = "#000000";
   obstacles.forEach(o => {
     ctx.fillRect(o.x * cell_w, o.y * cell_w, cell_w, cell_w, cell_w);
   });
 
-  traps.forEach(o => {
-    ctx.drawImage(use_fire1 ? fire1 : fire2, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
+  keys_and_doors.forEach(o => {
+    ctx.drawImage(key_image, o.key.x * cell_w, o.key.y * cell_w, cell_w, cell_w);
+    ctx.drawImage(door_image, o.door.x * cell_w, o.door.y * cell_w, cell_w, cell_w);
   });
 
-  ctx.drawImage(figure, player_position.x * cell_w, player_position.y * cell_w, cell_w, cell_w);
+  traps.forEach(o => {
+    ctx.drawImage(use_fire1 ? fire1_image : fire2_image, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
+  });
+
+  ctx.drawImage(figure_image, player_position.x * cell_w, player_position.y * cell_w, cell_w, cell_w);
 
   for (var x = 0; x < w; x += cell_w) {
     ctx.beginPath();
