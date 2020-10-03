@@ -79,15 +79,13 @@ var use_fire1 = true;
 var time_since_flip = 0;
 
 function update_character(position, dx, dy) {
-  position.x += dx;
-  position.y += dy;
-
-  for (var i = 0; i < obstacles.length; i++) {
-    if (character_occupies(position, obstacles[i])) {
-      position.x -= dx;
-      position.y -= dy;
-    }
+  const next_position = new_position(position.x + dx, position.y + dy);
+  if (contains_obstacle(next_position)) {
+    return;
   }
+
+  position.x = next_position.x;
+  position.y = next_position.y;
 
   for (var i = 0; i < traps.length; i++) {
     if (character_occupies(position, traps[i])) {
@@ -102,6 +100,15 @@ function update_character(position, dx, dy) {
     console.log("YOU WIN!");
     game_over = true;
   }
+}
+
+function contains_obstacle(position) {
+  for (var i = 0; i < obstacles.length; i++) {
+    if (character_occupies(position, obstacles[i])) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function update_objects(elapsed_time) {
