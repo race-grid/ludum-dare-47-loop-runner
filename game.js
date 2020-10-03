@@ -76,12 +76,15 @@ function update(elapsed_time) {
   player_position.x += player_dx;
   player_position.y += player_dy;
   player_dx = player_dy = 0;
-  traps.forEach(o => {
-    if (player_occupies(o)) {
+  for (var i = 0; i < traps.length; i++) {
+    if (player_occupies(traps[i])) {
       console.log("YOU LOSE!");
+      traps.splice(i, 1);
       game_over = true;
+      player_position.x = -1
+      player_position.y = -1
     }
-  });
+  }
   if (player_occupies(goal_position)) {
     console.log("YOU WIN!");
     game_over = true;
