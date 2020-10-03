@@ -1,59 +1,13 @@
 console.log("Start of game.js");
 
-// WASD
-var KEY_RIGHT = 68;
-var KEY_UP = 87;
-var KEY_LEFT = 65;
-var KEY_DOWN = 83;
+var player_movement = [0, 0];
 
-INPUT = {
-  right_held: false,
-  up_held: false,
-  left_held: false,
-  down_held: false,
-  onkeydown: function (e) {
-    var e = e || window.event;
-    var code = e.keyCode;
-
-    if (code == KEY_RIGHT && !INPUT.right_held) {
-      INPUT.right_held = true;
-      player_dx = 1;
-      player_dy = 0;
-    } else if (code == KEY_UP && !INPUT.up_held) {
-      INPUT.up_held = true;
-      player_dx = 0;
-      player_dy = -1;
-    } else if (code == KEY_LEFT && !INPUT.left_held) {
-      INPUT.left_held = true;
-      player_dx = -1;
-      player_dy = 0;
-    } else if (code == KEY_DOWN && !INPUT.down_held) {
-      INPUT.down_held = true;
-      player_dx = 0;
-      player_dy = 1;
-    }
-  },
-  onkeyup: function (e) {
-    var e = e || window.event;
-    var code = e.keyCode;
-
-    if (code == KEY_RIGHT) {
-      INPUT.right_held = false;
-    } else if (code == KEY_UP) {
-      INPUT.up_held = false;
-    } else if (code == KEY_LEFT) {
-      INPUT.left_held = false;
-    } else if (code == KEY_DOWN) {
-      INPUT.down_held = false;
-    }
-  }
-}
-
-var player_dx = 0;
-var player_dy = 0;
-
-document.onkeydown = INPUT.onkeydown;
-document.onkeyup = INPUT.onkeyup;
+setup_input_handler(
+  function () {player_movement = [1, 0]},
+  function () {player_movement = [0, -1]},
+  function () {player_movement = [-1, 0]},
+  function () {player_movement = [0, 1]},
+);
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -140,8 +94,8 @@ function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
   if (!game_state.game_over) {
-    update_character(game_state, player_dx, player_dy);
-    player_dx = player_dy = 0;
+    update_character(game_state, player_movement[0], player_movement[1]);
+    player_movement = [0, 0];
   }
   update_objects(game_state, elapsed_time);
   draw(game_state);
