@@ -36,19 +36,14 @@ var victory_sound = new Audio('assets/victory.mp3');
 
 var w = 400;
 var h = 400;
-var cell_w = 40;
-var grid_w = w / cell_w;
-var grid_h = h / cell_w;
-if (!Number.isInteger(grid_w) || !Number.isInteger(grid_h)){
-  console.error("Invalid grid dimensions: " + grid_w + ", " + grid_h);
-}
+var cell_w = 50;
 
 // This is the data for one specific map
 var game_state = new_game_state({
-    grid_w: grid_w,
-    grid_h: grid_h,
+    grid_w: 6,
+    grid_h: 2,
     player_position: new_position(2, 0),
-    traps: [new_position(0, 0), new_position(5, 5)],
+    traps: [new_position(0, 0)],
     obstacles: [
       new_position(0, 1),
       new_position(1, 1),
@@ -85,16 +80,16 @@ function draw(game_state) {
     figure_image, game_state.player_position.x * cell_w,
     game_state.player_position.y * cell_w, cell_w, cell_w);
 
-  for (var x = 0; x < w; x += cell_w) {
+  for (var i = 0; i <= game_state.grid_w; i ++) {
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, h);
+    ctx.moveTo(i * cell_w, 0);
+    ctx.lineTo(i * cell_w, game_state.grid_h * cell_w);
     ctx.stroke();
   }
-  for (var y = 0; y < h; y += cell_w) {
+  for (var j = 0; j <= game_state.grid_h; j ++) {
     ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
+    ctx.moveTo(0, j * cell_w);
+    ctx.lineTo(game_state.grid_w * cell_w, j * cell_w);
     ctx.stroke();
   }
 }
