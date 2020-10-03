@@ -73,18 +73,24 @@ var w = 400;
 var h = 400;
 var cell_w = 40;
 
-const player_position = new_position(0, 0)
-
+const player_position = new_position(2, 0);
 
 var use_fire1 = true;
 var time_since_flip = 0;
 
-function update_player() {
-  player_position.x += player_dx;
-  player_position.y += player_dy;
-  player_dx = player_dy = 0;
+function update_character(position, dx, dy) {
+  position.x += dx;
+  position.y += dy;
+
+  for (var i = 0; i < obstacles.length; i++) {
+    if (character_occupies(position, obstacles[i])) {
+      position.x -= dx;
+      position.y -= dy;
+    }
+  }
+
   for (var i = 0; i < traps.length; i++) {
-    if (player_occupies(traps[i])) {
+    if (character_occupies(position, traps[i])) {
       console.log("YOU LOSE!");
       traps.splice(i, 1);
       game_over = true;
@@ -92,7 +98,7 @@ function update_player() {
       player_position.y = -1
     }
   }
-  if (player_occupies(goal_position)) {
+  if (character_occupies(position, goal_position)) {
     console.log("YOU WIN!");
     game_over = true;
   }
@@ -106,11 +112,19 @@ function update_objects(elapsed_time) {
   }
 }
 
-function player_occupies(pos) {
-  return player_position.x == pos.x && player_position.y == pos.y;
+function character_occupies(character, pos) {
+  return character.x == pos.x && character.y == pos.y;
 }
 
-var traps = [new_position(3, 2), new_position(5, 5)];
+var traps = [new_position(0, 0), new_position(5, 5)];
+var obstacles = [
+  new_position(0, 1),
+  new_position(1, 1),
+  new_position(2, 1),
+  new_position(3, 1),
+  new_position(4, 1),
+  new_position(5, 1),
+];
 
 let goal_position = new_position(5, 0);
 
@@ -127,6 +141,10 @@ function draw() {
   ctx.fillRect(goal_position.x * cell_w, goal_position.y, cell_w, cell_w, cell_w);
 
   ctx.fillStyle = "#000000";
+  obstacles.forEach(o => {
+    ctx.fillRect(o.x * cell_w, o.y * cell_w, cell_w, cell_w, cell_w);
+  });
+
   traps.forEach(o => {
     ctx.drawImage(use_fire1 ? fire1 : fire2, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
   });
@@ -153,7 +171,8 @@ function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
   if (!game_over) {
-    update_player();
+    update_character(player_position, player_dx, player_dy);
+    player_dx = player_dy = 0;
   }
   update_objects(elapsed_time);
   draw();
