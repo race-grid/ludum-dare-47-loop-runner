@@ -37,8 +37,13 @@ var victory_sound = new Audio('assets/victory.mp3');
 var w = 400;
 var h = 400;
 var cell_w = 40;
+var grid_w = w / cell_w;
+var grid_h = h / cell_w;
+if (!Number.isInteger(grid_w) || !Number.isInteger(grid_h)){
+  console.error("Invalid grid dimensions: " + grid_w + ", " + grid_h);
+}
 
-game_state = new_game_state();
+var game_state = new_game_state(grid_w, grid_h);
 
 function draw(game_state) {
   ctx.clearRect(0, 0, w, h);

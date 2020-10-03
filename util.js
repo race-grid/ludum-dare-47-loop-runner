@@ -4,7 +4,8 @@ const GOAL_COLLISION = "__GOAL_COLLISION__";
 function perform_player_movement(game_state, dx, dy) {
   position = game_state.player_position;
   const next_position = new_position(position.x + dx, position.y + dy);
-  if (contains_obstacle(game_state, next_position)) {
+  if (contains_obstacle(game_state, next_position) ||
+    !is_position_in_game_world(game_state, next_position)) {
     return;
   }
 
@@ -46,6 +47,13 @@ function new_position(x, y) {
   return { "x": x, "y": y };
 }
 
+function is_position_in_game_world(game_state, position) {
+  return position.y >= 0
+    && position.x >= 0
+    && position.x < game_state.grid_w
+    && position.y < game_state.grid_h;
+}
+
 function contains_obstacle(game_state, position) {
   for (var i = 0; i < game_state.obstacles.length; i++) {
     if (character_occupies(position, game_state.obstacles[i])) {
@@ -60,8 +68,10 @@ function contains_obstacle(game_state, position) {
   return false;
 }
 
-function new_game_state() {
+function new_game_state(grid_w, grid_h) {
   var game_state = {
+    grid_w: grid_w,
+    grid_h: grid_h,
     time_since_flip: 0,
     player_position: new_position(2, 0),
     use_fire1: true,
