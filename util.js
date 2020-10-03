@@ -58,3 +58,24 @@ function contains_obstacle(game_state, position) {
   }
   return false;
 }
+
+function new_game_state() {
+  var game_state = {
+    time_since_flip: 0,
+    player_position: new_position(2, 0),
+    use_fire1: true,
+    traps: [new_position(0, 0), new_position(5, 5)],
+    obstacles: [
+                 new_position(0, 1),
+                 new_position(1, 1),
+                 new_position(2, 1),
+                 new_position(3, 1),
+                 new_position(4, 1),
+                 new_position(5, 1),
+               ],
+    keys_and_doors: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
+    goal_position: new_position(5, 0),
+    game_over: false,
+  };
+  return game_state;
+}

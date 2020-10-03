@@ -34,23 +34,7 @@ var w = 400;
 var h = 400;
 var cell_w = 40;
 
-game_state = {
-  time_since_flip: 0,
-  player_position: new_position(2, 0),
-  use_fire1: true,
-  traps: [new_position(0, 0), new_position(5, 5)],
-  obstacles: [
-               new_position(0, 1),
-               new_position(1, 1),
-               new_position(2, 1),
-               new_position(3, 1),
-               new_position(4, 1),
-               new_position(5, 1),
-             ],
-  keys_and_doors: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
-  goal_position: new_position(5, 0),
-  game_over: false,
-}
+game_state = new_game_state();
 
 function draw(game_state) {
   ctx.clearRect(0, 0, w, h);
@@ -106,5 +90,10 @@ function loop(timestamp) {
 
 lastRender = 0
 window.requestAnimationFrame(loop)
+
+document.getElementById("btn-reset").onclick = function (e) {
+  game_state = new_game_state();
+  console.log("Game was reset");
+}
 
 console.log("End of game.js");
