@@ -7,6 +7,7 @@ var current_state = STATE_PLAYING;
 var elapsed_time_since_loop_ended = 0;
 
 var player_movement = [0, 0];
+var loop_index = 0;
 
 setup_input_handler(
   function () { player_movement = [1, 0] },
@@ -20,6 +21,8 @@ setup_input_handler(
       game_state = map_1_game_state(ghost_movement_plans);
       recorded_player_moves = [];
       current_state = STATE_PLAYING;
+      loop_index ++;
+      document.getElementById("loop-text").textContent=loop_index + 1;
     }
   }
 );
@@ -57,7 +60,7 @@ const MAX_NUM_MOVES = 10;
 // This list is filled up with moves as you play, and then used for ghost
 recorded_player_moves = [];
 
-var game_state = map_1_game_state([]);
+reset_game();
 
 function draw(game_state) {
   ctx.clearRect(0, 0, w, h);
@@ -201,13 +204,18 @@ function loop(timestamp) {
   window.requestAnimationFrame(loop);
 }
 
+function reset_game() {
+  recorded_player_moves = [];
+  game_state = map_1_game_state([]);
+  loop_index = 0;
+  document.getElementById("loop-text").textContent=loop_index + 1;
+}
+
 lastRender = 0
 window.requestAnimationFrame(loop)
 
 document.getElementById("btn-reset").onclick = function (e) {
-  recorded_player_moves = [];
-  game_state = map_1_game_state([]);
-  console.log("Game was reset");
+  reset_game();
 }
 
 console.log("End of game.js");
