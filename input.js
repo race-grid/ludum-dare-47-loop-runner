@@ -1,5 +1,5 @@
 
-function setup_input_handler(on_right, on_up, on_left, on_down) {
+function setup_input_handler(on_right, on_up, on_left, on_down, on_any_keydown) {
 
   // WASD
   var KEY_RIGHT = 68;
@@ -15,6 +15,8 @@ function setup_input_handler(on_right, on_up, on_left, on_down) {
     onkeydown: function (e) {
       var e = e || window.event;
       var code = e.keyCode;
+
+      on_any_keydown();
 
       if (code == KEY_RIGHT && !key_state.right_held) {
         key_state.right_held = true;
