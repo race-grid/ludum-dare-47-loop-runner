@@ -1,5 +1,5 @@
 function map_1_game_state(ghost_movement_plans) {
-    document.getElementById("round-text").textContent = 1;
+    document.getElementById("move-text").textContent = 1;
     return new_game_state({
         grid_w: 10,
         grid_h: 1,

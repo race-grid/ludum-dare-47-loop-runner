@@ -37,7 +37,7 @@ var victory_sound = new Audio('assets/victory.mp3');
 var w = 400;
 var h = 400;
 var cell_w = 40;
-const MAX_NUM_ROUNDS = 10;
+const MAX_NUM_MOVES = 10;
 
 // This list is filled up with moves as you play, and then used for ghost
 recorded_player_moves = [];
@@ -124,8 +124,8 @@ function handle_character_movement(game_state, character_i, movement) {
   }
 
   if (is_last_character) {
-    game_state.round_index++;
-    document.getElementById("round-text").textContent=game_state.round_index + 1;
+    game_state.move_index++;
+    document.getElementById("move-text").textContent=game_state.move_index + 1;
   }
 
   player_movement_sound.play();
@@ -135,7 +135,7 @@ function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
   if (!game_state.game_over) {
-    if (game_state.characters.length == 0 || game_state.round_index == MAX_NUM_ROUNDS) {
+    if (game_state.characters.length == 0 || game_state.move_index == MAX_NUM_MOVES) {
       var ghost_movement_plans = game_state.ghost_movement_plans;
       ghost_movement_plans.push(recorded_player_moves);
       game_state = map_1_game_state(ghost_movement_plans);
@@ -146,8 +146,8 @@ function loop(timestamp) {
     if (active_character.is_player) {
       var movement = player_movement;
     } else {
-      if (game_state.round_index < active_character.movement_plan.length) {
-        var movement = active_character.movement_plan[game_state.round_index];
+      if (game_state.move_index < active_character.movement_plan.length) {
+        var movement = active_character.movement_plan[game_state.move_index];
       } else {
         var movement = [0, 0];
       }

@@ -152,7 +152,7 @@ function new_game_state({ grid_w, grid_h, active_character_i, start_position, gh
     key_door_pairs: key_door_pairs,
     goal_position: goal_position,
     game_over: false,
-    round_index: 0,
+    move_index: 0,
   };
   return game_state;
 }
