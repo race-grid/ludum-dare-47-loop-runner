@@ -36,32 +36,10 @@ var victory_sound = new Audio('assets/victory.mp3');
 
 var w = 400;
 var h = 400;
-var cell_w = 50;
+var cell_w = 40;
 
 // This list is filled up with moves as you play, and then used for ghost
 recorded_player_moves = [];
-
-function map_1_game_state(ghost_movement_plans) {
-  return new_game_state({
-      grid_w: 8,
-      grid_h: 8,
-      active_character_i: 0,
-      start_position: new_position(2, 0),
-      boxes: [new_position(4, 4)],
-      traps: [new_position(0, 0), new_position(0, 1), new_position(0, 2)],
-      obstacles: [
-        new_position(0, 5),
-        new_position(1, 5),
-        new_position(2, 5),
-        new_position(3, 5),
-        new_position(4, 5),
-        new_position(5, 5)
-      ],
-      ghost_movement_plans: ghost_movement_plans,
-      key_door_pairs: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
-      goal_position: new_position(5, 0)
-    });
-}
 
 var game_state = map_1_game_state([]);
 
