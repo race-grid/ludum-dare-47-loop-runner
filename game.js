@@ -15,7 +15,7 @@ setup_input_handler(
   function () { player_movement = [-1, 0] },
   function () { player_movement = [0, 1] },
   function () {
-    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_transition_started > 1000) {
+    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_transition_started > 300) {
       var ghost_movement_plans = game_state.ghost_movement_plans;
       ghost_movement_plans.push(recorded_player_moves);
       game_state = get_current_map_game_state(ghost_movement_plans);
@@ -23,23 +23,30 @@ setup_input_handler(
       current_state = STATE_PLAYING;
       loop_index++;
       document.getElementById("loop-text").textContent = loop_index + 1;
-    } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > 1000) {
-      current_map_index++;
+    } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > 300) {
+      current_map_number++;
       reset_game();
     }
   }
 );
 
-var current_map_index = 1;
+var current_map_number = 1;
 
 function get_current_map_game_state(ghost_movement_plans) {
-  switch (current_map_index) {
+  document.getElementById("move-text").textContent = 1;
+  switch (current_map_number) {
     case 1:
       return map_1_game_state(ghost_movement_plans);
     case 2:
       return map_2_game_state(ghost_movement_plans);
+    case 3:
+      return map_3_game_state(ghost_movement_plans);
+    case 4:
+      return map_4_game_state(ghost_movement_plans);
+    case 5:
+      return map_5_game_state(ghost_movement_plans);
   }
-  console.error("Invalid map index: " + current_map_index);
+  console.error("Invalid map index: " + current_map_number);
 }
 
 var canvas = document.getElementById("canvas");
