@@ -9,18 +9,21 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   if (game_state.time_since_movement < MOVEMENT_COOLDOWN) {
     return MOVEMENT_NOT_READY;
   }
-
   game_state.time_since_movement = 0;
 
   character = game_state.characters[character_i];
   const next_position = new_position(character.position.x + dx, character.position.y + dy);
-  if (contains_obstacle_or_character(game_state, next_position) ||
-    !is_position_in_game_world(game_state, next_position)) {
+  if (!valid_next_position(game_state, next_position, dx, dy)) {
     return;
   }
 
-  character.position.x = next_position.x;
-  character.position.y = next_position.y;
+  character.position = next_position;
+
+  for (var i = 0; i < game_state.boxes.length; i++) {
+    if (are_positions_equal(character.position, game_state.boxes[i])) {
+      game_state.boxes[i] = new_position(next_position.x + dx, next_position.y + dy);
+    }
+  }
 
   for (var i = 0; i < game_state.keys_and_doors.length; i++) {
     if (are_positions_equal(character.position, game_state.keys_and_doors[i].key)) {
@@ -38,6 +41,21 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   if (are_positions_equal(character.position, game_state.goal_position)) {
     return GOAL_COLLISION;
   }
+}
+
+function valid_next_position(game_state, next_position, dx, dy) {
+  if (contains_immovable_object(game_state, next_position) ||
+    !is_position_in_game_world(game_state, next_position)) {
+    return false;
+  }
+  if (contains_movable_object(game_state, next_position)) {
+    const next_position_of_moved_object = new_position(next_position.x + dx, next_position.y + dy);
+    if (contains_object(game_state, next_position_of_moved_object) ||
+      !is_position_in_game_world(game_state, next_position_of_moved_object)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function update_objects(game_state, elapsed_time) {
@@ -71,7 +89,11 @@ function is_position_in_game_world(game_state, position) {
     && position.y < game_state.grid_h;
 }
 
-function contains_obstacle_or_character(game_state, position) {
+function contains_object(game_state, position) {
+  return contains_immovable_object(game_state, position) || contains_movable_object(game_state, position);
+}
+
+function contains_immovable_object(game_state, position) {
   for (var i = 0; i < game_state.obstacles.length; i++) {
     if (are_positions_equal(position, game_state.obstacles[i])) {
       return true;
@@ -90,8 +112,17 @@ function contains_obstacle_or_character(game_state, position) {
   return false;
 }
 
-function new_game_state({grid_w, grid_h, active_character_i, characters, traps, obstacles,
-  keys_and_doors, goal_position}={}) {
+function contains_movable_object(game_state, position) {
+  for (var i = 0; i < game_state.boxes.length; i++) {
+    if (are_positions_equal(position, game_state.boxes[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function new_game_state({ grid_w, grid_h, active_character_i, characters, boxes, traps, obstacles,
+  keys_and_doors, goal_position } = {}) {
   var game_state = {
     grid_w: grid_w,
     grid_h: grid_h,
@@ -100,6 +131,7 @@ function new_game_state({grid_w, grid_h, active_character_i, characters, traps, 
     active_character_i: active_character_i,
     characters: characters,
     use_fire1: true,
+    boxes: boxes,
     traps: traps,
     obstacles: obstacles,
     keys_and_doors: keys_and_doors,

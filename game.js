@@ -40,19 +40,20 @@ var cell_w = 50;
 
 function map_1_game_state() {
   return new_game_state({
-      grid_w: 6,
-      grid_h: 2,
+      grid_w: 8,
+      grid_h: 8,
       active_character_i: 0,
       // TODO don't start with ghost. Add it later
       characters: [new_character(new_position(2, 0), true), new_character(new_position(3, 0), false)],
+      boxes: [new_position(4, 4)],
       traps: [new_position(0, 0)],
       obstacles: [
-        new_position(0, 1),
-        new_position(1, 1),
-        new_position(2, 1),
-        new_position(3, 1),
-        new_position(4, 1),
-        new_position(5, 1),
+        new_position(0, 5),
+        new_position(1, 5),
+        new_position(2, 5),
+        new_position(3, 5),
+        new_position(4, 5),
+        new_position(5, 5),
       ],
       keys_and_doors: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
       goal_position: new_position(5, 0)
@@ -71,6 +72,11 @@ function draw(game_state) {
   ctx.fillStyle = "#000000";
   game_state.obstacles.forEach(o => {
     ctx.fillRect(o.x * cell_w, o.y * cell_w, cell_w, cell_w, cell_w);
+  });
+
+  ctx.fillStyle = "#00AAAA";
+  game_state.boxes.forEach(b => {
+    ctx.fillRect(b.x * cell_w, b.y * cell_w, cell_w, cell_w, cell_w);
   });
 
   game_state.keys_and_doors.forEach(o => {
