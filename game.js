@@ -79,9 +79,16 @@ function draw(game_state) {
     ctx.fillRect(b.x * cell_w, b.y * cell_w, cell_w, cell_w, cell_w);
   });
 
-  game_state.key_door_pairs.forEach(o => {
-    ctx.drawImage(key_image, o.key.x * cell_w, o.key.y * cell_w, cell_w, cell_w);
-    ctx.drawImage(door_image, o.door.x * cell_w, o.door.y * cell_w, cell_w, cell_w);
+  game_state.key_door_pairs.forEach(p => {
+    ctx.drawImage(key_image, p.key.x * cell_w, p.key.y * cell_w, cell_w, cell_w);
+    ctx.drawImage(door_image, p.door.x * cell_w, p.door.y * cell_w, cell_w, cell_w);
+  });
+  game_state.button_door_pairs.forEach(p => {
+    ctx.fillStyle = "#AA00AA";
+    ctx.fillRect(p.button.x * cell_w, p.button.y * cell_w, cell_w, cell_w, cell_w);
+    if (!p.is_open) {
+      ctx.drawImage(door_image, p.door.x * cell_w, p.door.y * cell_w, cell_w, cell_w);
+    }
   });
   game_state.traps.forEach(o => {
     ctx.drawImage(game_state.use_fire1 ? fire1_image : fire2_image, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
@@ -117,7 +124,7 @@ function handle_character_movement(game_state, character_i, movement) {
   var is_player = game_state.characters[character_i].is_player;
 
   if (!game_state.characters[character_i].is_alive) {
-    update_character_and_move(game_state);
+    update_character_and_move_index(game_state);
     return;
   }
 
@@ -142,12 +149,12 @@ function handle_character_movement(game_state, character_i, movement) {
     victory_sound.play();
   }
 
-  update_character_and_move(game_state);
+  update_character_and_move_index(game_state);
 
   player_movement_sound.play();
 }
 
-function update_character_and_move(game_state) {
+function update_character_and_move_index(game_state) {
   game_state.active_character_i = (game_state.active_character_i + 1) % game_state.characters.length;
   if (game_state.active_character_i == 0) {
     game_state.move_index++;

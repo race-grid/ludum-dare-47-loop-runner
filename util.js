@@ -15,7 +15,7 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   if (!is_valid_movement(game_state, character, dx, dy)) {
     return;
   }
-
+  const previous_position = character.position;
   const next_position = new_position(character.position.x + dx, character.position.y + dy);
   character.position = next_position;
 
@@ -28,6 +28,15 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   for (var i = 0; i < game_state.key_door_pairs.length; i++) {
     if (are_positions_equal(character.position, game_state.key_door_pairs[i].key)) {
       game_state.key_door_pairs.splice(i, 1);
+    }
+  }
+
+  for (var i = 0; i < game_state.button_door_pairs.length; i++) {
+    const pair = game_state.button_door_pairs[i];
+    if (are_positions_equal(character.position, pair.button)) {
+      pair.is_open = true;
+    } else if (are_positions_equal(previous_position, pair.button)) {
+      pair.is_open = false;
     }
   }
 
@@ -115,6 +124,12 @@ function contains_immovable_object(game_state, position) {
       return true;
     }
   }
+  for (var i = 0; i < game_state.button_door_pairs.length; i++) {
+    const pair = game_state.button_door_pairs[i];
+    if (!pair.is_open && are_positions_equal(position, pair.door)) {
+      return true;
+    }
+  }
   for (var i = 0; i < game_state.characters.length; i++) {
     const character = game_state.characters[i];
     if (character.is_alive && are_positions_equal(position, character.position)) {
@@ -134,7 +149,7 @@ function contains_movable_object(game_state, position) {
 }
 
 function new_game_state({ map_name, grid_w, grid_h, active_character_i, start_position, ghost_movement_plans, boxes, traps, obstacles,
-  key_door_pairs, goal_position } = {}) {
+  key_door_pairs, button_door_pairs, goal_position } = {}) {
   var ghosts = [];
   ghost_movement_plans.forEach( plan => {
     ghosts.push(new_ghost(new_position(start_position.x, start_position.y), plan));
@@ -154,6 +169,7 @@ function new_game_state({ map_name, grid_w, grid_h, active_character_i, start_po
     traps: traps,
     obstacles: obstacles,
     key_door_pairs: key_door_pairs,
+    button_door_pairs: button_door_pairs,
     goal_position: goal_position,
     game_over: false,
     move_index: 0,
