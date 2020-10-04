@@ -15,7 +15,7 @@ function intro_map(ghost_movement_plans) {
     });
 }
 
-function learn_button(ghost_movement_plans) {
+function learn_button_map(ghost_movement_plans) {
     return new_game_state({
         map_name: "Keep it down",
         grid_w: 7,
