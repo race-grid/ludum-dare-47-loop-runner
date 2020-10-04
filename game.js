@@ -207,6 +207,7 @@ function loop(timestamp) {
 function reset_game() {
   recorded_player_moves = [];
   game_state = map_1_game_state([]);
+  document.getElementById("mapname-text").textContent = game_state.map_name;
   loop_index = 0;
   document.getElementById("loop-text").textContent=loop_index + 1;
 }

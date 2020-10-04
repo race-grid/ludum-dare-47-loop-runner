@@ -1,6 +1,7 @@
 function map_1_game_state(ghost_movement_plans) {
     document.getElementById("move-text").textContent = 1;
     return new_game_state({
+        map_name: "Map 1: Learning the loops",
         grid_w: 10,
         grid_h: 1,
         active_character_i: 0,

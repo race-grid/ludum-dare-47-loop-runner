@@ -130,13 +130,14 @@ function contains_movable_object(game_state, position) {
   return false;
 }
 
-function new_game_state({ grid_w, grid_h, active_character_i, start_position, ghost_movement_plans, boxes, traps, obstacles,
+function new_game_state({ map_name, grid_w, grid_h, active_character_i, start_position, ghost_movement_plans, boxes, traps, obstacles,
   key_door_pairs, goal_position } = {}) {
   var ghosts = [];
   ghost_movement_plans.forEach( plan => {
     ghosts.push(new_ghost(new_position(start_position.x, start_position.y), plan));
   });
   var game_state = {
+    map_name: map_name,
     grid_w: grid_w,
     grid_h: grid_h,
     time_since_flip: 0,
