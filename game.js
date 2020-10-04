@@ -136,7 +136,7 @@ function loop(timestamp) {
 
   if (!game_state.game_over) {
     if (game_state.characters.length == 0 || game_state.round_index == MAX_NUM_ROUNDS) {
-      ghost_movement_plans = game_state.ghost_movement_plans;
+      var ghost_movement_plans = game_state.ghost_movement_plans;
       ghost_movement_plans.push(recorded_player_moves);
       game_state = map_1_game_state(ghost_movement_plans);
       recorded_player_moves = [];
@@ -170,6 +170,7 @@ lastRender = 0
 window.requestAnimationFrame(loop)
 
 document.getElementById("btn-reset").onclick = function (e) {
+  recorded_player_moves = [];
   game_state = map_1_game_state([]);
   console.log("Game was reset");
 }
