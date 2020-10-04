@@ -46,7 +46,7 @@ function map_1_game_state(ghost_movement_plans) {
       grid_w: 8,
       grid_h: 8,
       active_character_i: 0,
-      characters: [new_character(new_position(2, 0), true)],
+      start_position: new_position(2, 0),
       boxes: [new_position(4, 4)],
       traps: [new_position(0, 0), new_position(0, 1), new_position(0, 2)],
       obstacles: [
