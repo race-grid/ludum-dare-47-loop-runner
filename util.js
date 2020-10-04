@@ -12,11 +12,11 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   game_state.time_since_movement = 0;
 
   character = game_state.characters[character_i];
-  const next_position = new_position(character.position.x + dx, character.position.y + dy);
-  if (!is_valid_next_position(game_state, next_position, dx, dy)) {
+  if (!is_valid_movement(game_state, character, dx, dy)) {
     return;
   }
 
+  const next_position = new_position(character.position.x + dx, character.position.y + dy);
   character.position = next_position;
 
   for (var i = 0; i < game_state.boxes.length; i++) {
@@ -43,7 +43,8 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   }
 }
 
-function is_valid_next_position(game_state, next_position, dx, dy) {
+function is_valid_movement(game_state, character, dx, dy) {
+  const next_position = new_position(character.position.x + dx, character.position.y + dy);
   if (contains_immovable_object(game_state, next_position) ||
     !is_position_in_game_world(game_state, next_position)) {
     return false;
