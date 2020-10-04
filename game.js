@@ -24,29 +24,25 @@ setup_input_handler(
       loop_index++;
       document.getElementById("loop-text").textContent = loop_index + 1;
     } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > 300) {
-      current_map_number++;
+      current_map_index++;
       reset_game();
     }
   }
 );
 
-var current_map_number = 1;
+var current_map_index = 0;
+
+const MAP_FACTORY_FUNCTIONS = [
+  intro_map,
+  learn_button,
+  learn_fire_map,
+  learn_box_map,
+  intermediate_box_button_map,
+];
 
 function get_current_map_game_state(ghost_movement_plans) {
   document.getElementById("move-text").textContent = 1;
-  switch (current_map_number) {
-    case 1:
-      return map_1_game_state(ghost_movement_plans);
-    case 2:
-      return map_2_game_state(ghost_movement_plans);
-    case 3:
-      return map_3_game_state(ghost_movement_plans);
-    case 4:
-      return map_4_game_state(ghost_movement_plans);
-    case 5:
-      return map_5_game_state(ghost_movement_plans);
-  }
-  console.error("Invalid map index: " + current_map_number);
+  return MAP_FACTORY_FUNCTIONS[current_map_index](ghost_movement_plans);
 }
 
 var canvas = document.getElementById("canvas");
@@ -258,7 +254,8 @@ function reset_game() {
   recorded_player_moves = [];
   current_state = STATE_PLAYING;
   game_state = get_current_map_game_state([]);
-  document.getElementById("mapname-text").textContent = game_state.map_name;
+
+  document.getElementById("mapname-text").textContent = "Map " + (current_map_index + 1) + ": " + game_state.map_name;
   loop_index = 0;
   document.getElementById("loop-text").textContent = loop_index + 1;
 }
