@@ -1,21 +1,24 @@
 const TRAP_COLLISION = "__TRAP_COLLISION__";
 const GOAL_COLLISION = "__GOAL_COLLISION__";
-const NO_MOVEMENT = "__NO_MOVEMENT__";
+const MOVEMENT_NOT_READY = "__MOVEMENT_NOT_READY__";
 
-const MOVEMENT_COOLDOWN = 200;
+const MOVEMENT_COOLDOWN = 250;
 
-function perform_player_movement(game_state, character, dx, dy) {
-  const next_position = new_position(character.position.x + dx, character.position.y + dy);
-  if (contains_obstacle(game_state, next_position) ||
-    !is_position_in_game_world(game_state, next_position)) {
-    return NO_MOVEMENT;
-  }
+function perform_character_movement(game_state, character_i, dx, dy) {
 
   if (game_state.time_since_movement < MOVEMENT_COOLDOWN) {
-    return NO_MOVEMENT;
+    return MOVEMENT_NOT_READY;
   }
 
   game_state.time_since_movement = 0;
+
+  character = game_state.characters[character_i];
+  const next_position = new_position(character.position.x + dx, character.position.y + dy);
+  if (contains_obstacle_or_character(game_state, next_position) ||
+    !is_position_in_game_world(game_state, next_position)) {
+    return;
+  }
+
   character.position.x = next_position.x;
   character.position.y = next_position.y;
 
@@ -28,8 +31,7 @@ function perform_player_movement(game_state, character, dx, dy) {
   for (var i = 0; i < game_state.traps.length; i++) {
     if (are_positions_equal(character.position, game_state.traps[i])) {
       game_state.traps.splice(i, 1);
-      character.position.x = -1
-      character.position.y = -1
+      game_state.characters.splice(character_i, 1);
       return TRAP_COLLISION;
     }
   }
@@ -51,9 +53,9 @@ function are_positions_equal(p1, p2) {
   return p1.x == p2.x && p1.y == p2.y;
 }
 
-function new_character(position, is_active) {
+function new_character(position, is_player) {
   return {
-    is_active: is_active,
+    is_player: is_player,
     position: position
   }
 }
@@ -69,7 +71,7 @@ function is_position_in_game_world(game_state, position) {
     && position.y < game_state.grid_h;
 }
 
-function contains_obstacle(game_state, position) {
+function contains_obstacle_or_character(game_state, position) {
   for (var i = 0; i < game_state.obstacles.length; i++) {
     if (are_positions_equal(position, game_state.obstacles[i])) {
       return true;
@@ -80,16 +82,22 @@ function contains_obstacle(game_state, position) {
       return true;
     }
   }
+  for (var i = 0; i < game_state.characters.length; i++) {
+    if (are_positions_equal(position, game_state.characters[i].position)) {
+      return true;
+    }
+  }
   return false;
 }
 
-function new_game_state({grid_w, grid_h, characters, traps, obstacles, keys_and_doors,
-    goal_position}={}) {
+function new_game_state({grid_w, grid_h, active_character_i, characters, traps, obstacles,
+  keys_and_doors, goal_position}={}) {
   var game_state = {
     grid_w: grid_w,
     grid_h: grid_h,
     time_since_flip: 0,
     time_since_movement: 0,
+    active_character_i: active_character_i,
     characters: characters,
     use_fire1: true,
     traps: traps,

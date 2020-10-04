@@ -42,7 +42,9 @@ function map_1_game_state() {
   return new_game_state({
       grid_w: 6,
       grid_h: 2,
-      characters: [new_character(new_position(2, 0), true)],
+      active_character_i: 0,
+      // TODO don't start with ghost. Add it later
+      characters: [new_character(new_position(2, 0), true), new_character(new_position(3, 0), false)],
       traps: [new_position(0, 0)],
       obstacles: [
         new_position(0, 1),
@@ -79,12 +81,13 @@ function draw(game_state) {
     ctx.drawImage(game_state.use_fire1 ? fire1_image : fire2_image, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
   });
 
-  // draw all chars
-  character = game_state.characters[0]
-  ctx.drawImage(
-    figure_image, character.position.x * cell_w,
-    character.position.y * cell_w, cell_w, cell_w);
+  game_state.characters.forEach(c => {
+    // TODO draw ghost differently
+    ctx.drawImage(
+        figure_image, c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
+  });
 
+  // Draw grid
   for (var i = 0; i <= game_state.grid_w; i ++) {
     ctx.beginPath();
     ctx.moveTo(i * cell_w, 0);
@@ -99,26 +102,49 @@ function draw(game_state) {
   }
 }
 
+function handle_character_movement(game_state, character_i, movement) {
+  if (movement[0] == 0 && movement[1] == 0){
+    return;
+  }
+
+  move_result = perform_character_movement(game_state, character_i, movement[0], movement[1]);
+  if (move_result == MOVEMENT_NOT_READY) {
+    return;
+  }
+
+  // TODO: if player: record this move into a list
+
+  if (move_result == TRAP_COLLISION) {
+    console.log("someone died");
+    death_sound.play();
+    // we assume that character was removed from list (death)
+    game_state.active_character_i = game_state.active_character_i  % game_state.characters.length;
+  } else if (move_result == GOAL_COLLISION) {
+    console.log("YOU WIN");
+    game_state.game_over = true;
+    victory_sound.play();
+  }
+
+  game_state.active_character_i = (game_state.active_character_i + 1)  % game_state.characters.length;
+
+  player_movement_sound.play();
+}
+
 function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
   if (!game_state.game_over) {
-  // TODO handle all characters
-    if (!(player_movement[0] == 0 && player_movement[1] == 0)) {
-      move_result = perform_player_movement(game_state,
-        game_state.characters[0], player_movement[0], player_movement[1]);
-      if (move_result == TRAP_COLLISION) {
-        console.log("YOU LOSE");
-        game_state.game_over = true;
-        death_sound.play();
-      } else if (move_result == GOAL_COLLISION) {
-        console.log("YOU WIN");
-        game_state.game_over = true;
-        victory_sound.play();
-      } else if (move_result != NO_MOVEMENT) {
-        player_movement_sound.play();
-      }
+    if (game_state.characters.length == 0) {
+      // TODO restart game with one additional ghost (based on what you just did)
+    }
 
+    active_character = game_state.characters[game_state.active_character_i];
+    // TODO move ghost according to its plan
+    ghost_movement = [-1, 0];
+    handle_character_movement(game_state, game_state.active_character_i,
+      active_character.is_player ? player_movement : ghost_movement);
+
+    if (active_character.is_player) {
       player_movement = [0, 0];
     }
   }
