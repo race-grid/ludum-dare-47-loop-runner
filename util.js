@@ -1,14 +1,22 @@
 const TRAP_COLLISION = "__TRAP_COLLISION__";
 const GOAL_COLLISION = "__GOAL_COLLISION__";
+const NO_MOVEMENT = "__NO_MOVEMENT__";
+
+const MOVEMENT_COOLDOWN = 200;
 
 function perform_player_movement(game_state, dx, dy) {
   position = game_state.player_position;
   const next_position = new_position(position.x + dx, position.y + dy);
   if (contains_obstacle(game_state, next_position) ||
     !is_position_in_game_world(game_state, next_position)) {
-    return;
+    return NO_MOVEMENT;
   }
 
+  if (game_state.time_since_movement < MOVEMENT_COOLDOWN) {
+    return NO_MOVEMENT;
+  }
+
+  game_state.time_since_movement = 0;
   position.x = next_position.x;
   position.y = next_position.y;
 
@@ -32,6 +40,7 @@ function perform_player_movement(game_state, dx, dy) {
 }
 
 function update_objects(game_state, elapsed_time) {
+  game_state.time_since_movement += elapsed_time;
   game_state.time_since_flip += elapsed_time;
   if (game_state.time_since_flip >= 500) {
     game_state.time_since_flip = 0;
@@ -73,6 +82,7 @@ function new_game_state({grid_w, grid_h, player_position, traps, obstacles, keys
     grid_w: grid_w,
     grid_h: grid_h,
     time_since_flip: 0,
+    time_since_movement: 0,
     player_position: player_position,
     use_fire1: true,
     traps: traps,

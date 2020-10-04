@@ -102,17 +102,19 @@ function loop(timestamp) {
 
   if (!game_state.game_over) {
     if (!(player_movement[0] == 0 && player_movement[1] == 0)) {
-      collision = perform_player_movement(game_state, player_movement[0], player_movement[1]);
-      if (collision == TRAP_COLLISION) {
+      move_result = perform_player_movement(game_state, player_movement[0], player_movement[1]);
+      if (move_result == TRAP_COLLISION) {
         console.log("YOU LOSE");
         game_state.game_over = true;
         death_sound.play();
-      } else if (collision == GOAL_COLLISION) {
+      } else if (move_result == GOAL_COLLISION) {
         console.log("YOU WIN");
         game_state.game_over = true;
         victory_sound.play();
+      } else if (move_result != NO_MOVEMENT) {
+        player_movement_sound.play();
       }
-      player_movement_sound.play();
+
       player_movement = [0, 0];
     }
   }
