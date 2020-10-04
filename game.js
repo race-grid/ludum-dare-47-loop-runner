@@ -2,9 +2,9 @@ console.log("Start of game.js");
 
 const STATE_PLAYING = "__PLAYING__";
 const STATE_BETWEEN_LOOPS = "__BETWEEN_LOOPS__";
+const STATE_BETWEEN_MAPS = "__BETWEEN_MAPS__";
 
-var current_state = STATE_PLAYING;
-var elapsed_time_since_loop_ended = 0;
+var elapsed_time_since_transition_started = 0;
 
 var player_movement = [0, 0];
 var loop_index = 0;
@@ -15,17 +15,32 @@ setup_input_handler(
   function () { player_movement = [-1, 0] },
   function () { player_movement = [0, 1] },
   function () {
-    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_loop_ended > 1000) {
+    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_transition_started > 1000) {
       var ghost_movement_plans = game_state.ghost_movement_plans;
       ghost_movement_plans.push(recorded_player_moves);
-      game_state = map_1_game_state(ghost_movement_plans);
+      game_state = get_current_map_game_state(ghost_movement_plans);
       recorded_player_moves = [];
       current_state = STATE_PLAYING;
       loop_index++;
       document.getElementById("loop-text").textContent = loop_index + 1;
+    } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > 1000) {
+      current_map_index++;
+      reset_game();
     }
   }
 );
+
+var current_map_index = 1;
+
+function get_current_map_game_state(ghost_movement_plans) {
+  switch (current_map_index) {
+    case 1:
+      return map_1_game_state(ghost_movement_plans);
+    case 2:
+      return map_2_game_state(ghost_movement_plans);
+  }
+  console.error("Invalid map index: " + current_map_index);
+}
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -145,7 +160,7 @@ function handle_character_movement(game_state, character_i, movement) {
     death_sound.play();
   } else if (move_result == GOAL_COLLISION) {
     console.log("YOU WIN");
-    game_state.game_over = true;
+    game_state.has_won = true;
     victory_sound.play();
   }
 
@@ -164,14 +179,22 @@ function update_character_and_move_index(game_state) {
 
 function update_playing(elapsed_time) {
 
-  if (!game_state.game_over) {
+  if (game_state.has_won) {
+    ctx.font = '24px serif';
+    ctx.fillStyle = "#000000";
+    ctx.fillText("Map cleared!", 50, 320);
+    ctx.fillText("press any key to go to next map", 50, 350);
+    current_state = STATE_BETWEEN_MAPS;
+    elapsed_time_since_transition_started = 0;
+    return;
+  } else {
     if (are_all_characters_dead(game_state) || game_state.move_index == MAX_NUM_MOVES) {
       ctx.font = '24px serif';
       ctx.fillStyle = "#000000";
       ctx.fillText("Out of moves...", 50, 320);
       ctx.fillText("press any key to start next loop", 50, 350);
       current_state = STATE_BETWEEN_LOOPS;
-      elapsed_time_since_loop_ended = 0;
+      elapsed_time_since_transition_started = 0;
       return;
     }
 
@@ -205,8 +228,8 @@ function are_all_characters_dead(game_state) {
   return true;
 }
 
-function update_between_loops(elapsed_time) {
-  elapsed_time_since_loop_ended += elapsed_time;
+function update_during_transition(elapsed_time) {
+  elapsed_time_since_transition_started += elapsed_time;
 }
 
 function loop(timestamp) {
@@ -214,10 +237,10 @@ function loop(timestamp) {
 
   if (current_state == STATE_PLAYING) {
     update_playing(elapsed_time);
-  } else if (current_state == STATE_BETWEEN_LOOPS) {
-    update_between_loops(elapsed_time);
+  } else if (current_state == STATE_BETWEEN_LOOPS || current_state == STATE_BETWEEN_MAPS) {
+    update_during_transition(elapsed_time);
   } else {
-    console.warning("Invalid current state: " + current_state);
+    console.error("Invalid current state: " + current_state);
   }
 
   lastRender = timestamp;
@@ -226,7 +249,8 @@ function loop(timestamp) {
 
 function reset_game() {
   recorded_player_moves = [];
-  game_state = map_1_game_state([]);
+  current_state = STATE_PLAYING;
+  game_state = get_current_map_game_state([]);
   document.getElementById("mapname-text").textContent = game_state.map_name;
   loop_index = 0;
   document.getElementById("loop-text").textContent = loop_index + 1;
