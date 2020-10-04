@@ -21,8 +21,8 @@ setup_input_handler(
       game_state = map_1_game_state(ghost_movement_plans);
       recorded_player_moves = [];
       current_state = STATE_PLAYING;
-      loop_index ++;
-      document.getElementById("loop-text").textContent=loop_index + 1;
+      loop_index++;
+      document.getElementById("loop-text").textContent = loop_index + 1;
     }
   }
 );
@@ -88,12 +88,14 @@ function draw(game_state) {
   });
 
   game_state.characters.forEach(c => {
-    if (!c.is_player) {
-      ctx.fillStyle = "#FF0000";
-      ctx.fillRect(c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
+    if (c.is_alive) {
+      if (!c.is_player) {
+        ctx.fillStyle = "#FF0000";
+        ctx.fillRect(c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
+      }
+      ctx.drawImage(
+        figure_image, c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
     }
-    ctx.drawImage(
-      figure_image, c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
   });
 
   // Draw grid
@@ -114,11 +116,14 @@ function draw(game_state) {
 function handle_character_movement(game_state, character_i, movement) {
   var is_player = game_state.characters[character_i].is_player;
 
-  if (is_player && movement[0] == 0 && movement[1] == 0) {
+  if (!game_state.characters[character_i].is_alive) {
+    update_character_and_move(game_state);
     return;
   }
 
-  var is_last_character = character_i == game_state.characters.length - 1;
+  if (is_player && movement[0] == 0 && movement[1] == 0) {
+    return;
+  }
 
   var move_result = perform_character_movement(game_state, character_i, movement[0], movement[1]);
   if (move_result == MOVEMENT_NOT_READY) {
@@ -131,30 +136,29 @@ function handle_character_movement(game_state, character_i, movement) {
 
   if (move_result == TRAP_COLLISION) {
     death_sound.play();
-    // we assume that character was removed from list (death)
-    game_state.active_character_i = game_state.active_character_i % game_state.characters.length;
   } else if (move_result == GOAL_COLLISION) {
     console.log("YOU WIN");
     game_state.game_over = true;
     victory_sound.play();
-  } else {
-    game_state.active_character_i = (game_state.active_character_i + 1) % game_state.characters.length;
   }
 
-  if (is_last_character) {
-    game_state.move_index++;
-    if (game_state.move_index < MAX_NUM_MOVES) {
-      document.getElementById("move-text").textContent=game_state.move_index + 1;
-    }
-  }
+  update_character_and_move(game_state);
 
   player_movement_sound.play();
+}
+
+function update_character_and_move(game_state) {
+  game_state.active_character_i = (game_state.active_character_i + 1) % game_state.characters.length;
+  if (game_state.active_character_i == 0) {
+    game_state.move_index++;
+    document.getElementById("move-text").textContent = game_state.move_index + 1;
+  }
 }
 
 function update_playing(elapsed_time) {
 
   if (!game_state.game_over) {
-    if (game_state.characters.length == 0 || game_state.move_index == MAX_NUM_MOVES) {
+    if (are_all_characters_dead(game_state) || game_state.move_index == MAX_NUM_MOVES) {
       ctx.font = '24px serif';
       ctx.fillStyle = "#000000";
       ctx.fillText("Out of moves...", 50, 320);
@@ -185,6 +189,15 @@ function update_playing(elapsed_time) {
   draw(game_state);
 }
 
+function are_all_characters_dead(game_state) {
+  for (var i = 0; i < game_state.characters.length; i++) {
+    if (game_state.characters[i].is_alive) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function update_between_loops(elapsed_time) {
   elapsed_time_since_loop_ended += elapsed_time;
 }
@@ -192,7 +205,7 @@ function update_between_loops(elapsed_time) {
 function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
-  if (current_state == STATE_PLAYING){
+  if (current_state == STATE_PLAYING) {
     update_playing(elapsed_time);
   } else if (current_state == STATE_BETWEEN_LOOPS) {
     update_between_loops(elapsed_time);
@@ -209,7 +222,7 @@ function reset_game() {
   game_state = map_1_game_state([]);
   document.getElementById("mapname-text").textContent = game_state.map_name;
   loop_index = 0;
-  document.getElementById("loop-text").textContent=loop_index + 1;
+  document.getElementById("loop-text").textContent = loop_index + 1;
 }
 
 lastRender = 0

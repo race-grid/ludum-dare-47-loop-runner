@@ -34,7 +34,7 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   for (var i = 0; i < game_state.traps.length; i++) {
     if (are_positions_equal(character.position, game_state.traps[i])) {
       game_state.traps.splice(i, 1);
-      game_state.characters.splice(character_i, 1);
+      character.is_alive = false;
       return TRAP_COLLISION;
     }
   }
@@ -75,7 +75,8 @@ function are_positions_equal(p1, p2) {
 function new_character(position, is_player) {
   return {
     is_player: is_player,
-    position: position
+    position: position,
+    is_alive: true,
   }
 }
 
@@ -83,6 +84,7 @@ function new_ghost(position, movement_plan) {
   return {
     is_player: false,
     position: position,
+    is_alive: true,
     movement_plan: movement_plan,
   };
 }
@@ -114,7 +116,8 @@ function contains_immovable_object(game_state, position) {
     }
   }
   for (var i = 0; i < game_state.characters.length; i++) {
-    if (are_positions_equal(position, game_state.characters[i].position)) {
+    const character = game_state.characters[i];
+    if (character.is_alive && are_positions_equal(position, character.position)) {
       return true;
     }
   }

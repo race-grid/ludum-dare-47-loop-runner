@@ -7,7 +7,7 @@ function map_1_game_state(ghost_movement_plans) {
         active_character_i: 0,
         start_position: new_position(2, 0),
         boxes: [],
-        traps: [],
+        traps: [new_position(4,0)],
         obstacles: [],
         ghost_movement_plans: ghost_movement_plans,
         key_door_pairs: [{ "key": new_position(0, 0), "door": new_position(7, 0) }],
