@@ -3,10 +3,10 @@ console.log("Start of game.js");
 var player_movement = [0, 0];
 
 setup_input_handler(
-  function () {player_movement = [1, 0]},
-  function () {player_movement = [0, -1]},
-  function () {player_movement = [-1, 0]},
-  function () {player_movement = [0, 1]},
+  function () { player_movement = [1, 0] },
+  function () { player_movement = [0, -1] },
+  function () { player_movement = [-1, 0] },
+  function () { player_movement = [0, 1] },
 );
 
 var canvas = document.getElementById("canvas");
@@ -37,6 +37,7 @@ var victory_sound = new Audio('assets/victory.mp3');
 var w = 400;
 var h = 400;
 var cell_w = 40;
+const MAX_NUM_ROUNDS = 10;
 
 // This list is filled up with moves as you play, and then used for ghost
 recorded_player_moves = [];
@@ -69,22 +70,22 @@ function draw(game_state) {
   });
 
   game_state.characters.forEach(c => {
-    if (!c.is_player){
+    if (!c.is_player) {
       ctx.fillStyle = "#FF0000";
-        ctx.fillRect(c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
+      ctx.fillRect(c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
     }
     ctx.drawImage(
-        figure_image, c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
+      figure_image, c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
   });
 
   // Draw grid
-  for (var i = 0; i <= game_state.grid_w; i ++) {
+  for (var i = 0; i <= game_state.grid_w; i++) {
     ctx.beginPath();
     ctx.moveTo(i * cell_w, 0);
     ctx.lineTo(i * cell_w, game_state.grid_h * cell_w);
     ctx.stroke();
   }
-  for (var j = 0; j <= game_state.grid_h; j ++) {
+  for (var j = 0; j <= game_state.grid_h; j++) {
     ctx.beginPath();
     ctx.moveTo(0, j * cell_w);
     ctx.lineTo(game_state.grid_w * cell_w, j * cell_w);
@@ -95,11 +96,11 @@ function draw(game_state) {
 function handle_character_movement(game_state, character_i, movement) {
   var is_player = game_state.characters[character_i].is_player;
 
-  if (is_player && movement[0] == 0 && movement[1] == 0){
+  if (is_player && movement[0] == 0 && movement[1] == 0) {
     return;
   }
 
-  var is_last_character = character_i == game_state.characters.length -1;
+  var is_last_character = character_i == game_state.characters.length - 1;
 
   var move_result = perform_character_movement(game_state, character_i, movement[0], movement[1]);
   if (move_result == MOVEMENT_NOT_READY) {
@@ -119,12 +120,11 @@ function handle_character_movement(game_state, character_i, movement) {
     game_state.game_over = true;
     victory_sound.play();
   } else {
-    game_state.active_character_i = (game_state.active_character_i + 1)  % game_state.characters.length;
+    game_state.active_character_i = (game_state.active_character_i + 1) % game_state.characters.length;
   }
 
-  if (is_last_character){
-    // As we looped around to index 0, we finished one round
-    game_state.round_index ++;
+  if (is_last_character) {
+    game_state.round_index++;
   }
 
   player_movement_sound.play();
@@ -134,7 +134,7 @@ function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
   if (!game_state.game_over) {
-    if (game_state.characters.length == 0) {
+    if (game_state.characters.length == 0 || game_state.round_index == MAX_NUM_ROUNDS) {
       ghost_movement_plans = game_state.ghost_movement_plans;
       ghost_movement_plans.push(recorded_player_moves);
       game_state = map_1_game_state(ghost_movement_plans);
@@ -145,9 +145,9 @@ function loop(timestamp) {
     if (active_character.is_player) {
       var movement = player_movement;
     } else {
-      if (game_state.round_index < active_character.movement_plan.length ){
+      if (game_state.round_index < active_character.movement_plan.length) {
         var movement = active_character.movement_plan[game_state.round_index];
-      }else {
+      } else {
         var movement = [0, 0];
       }
     }
