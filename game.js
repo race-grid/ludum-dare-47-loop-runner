@@ -38,29 +38,32 @@ var w = 400;
 var h = 400;
 var cell_w = 50;
 
-function map_1_game_state() {
+// This list is filled up with moves as you play, and then used for ghost
+recorded_player_moves = [];
+
+function map_1_game_state(ghost_movement_plans) {
   return new_game_state({
       grid_w: 8,
       grid_h: 8,
       active_character_i: 0,
-      // TODO don't start with ghost. Add it later
-      characters: [new_character(new_position(2, 0), true), new_character(new_position(3, 0), false)],
+      characters: [new_character(new_position(2, 0), true)],
       boxes: [new_position(4, 4)],
-      traps: [new_position(0, 0)],
+      traps: [new_position(0, 0), new_position(0, 1), new_position(0, 2)],
       obstacles: [
         new_position(0, 5),
         new_position(1, 5),
         new_position(2, 5),
         new_position(3, 5),
         new_position(4, 5),
-        new_position(5, 5),
+        new_position(5, 5)
       ],
+      ghost_movement_plans: ghost_movement_plans,
       key_door_pairs: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
       goal_position: new_position(5, 0)
     });
 }
 
-var game_state = map_1_game_state();
+var game_state = map_1_game_state([]);
 
 function draw(game_state) {
   ctx.clearRect(0, 0, w, h);
@@ -88,7 +91,10 @@ function draw(game_state) {
   });
 
   game_state.characters.forEach(c => {
-    // TODO draw ghost differently
+    if (!c.is_player){
+      ctx.fillStyle = "#FF0000";
+        ctx.fillRect(c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
+    }
     ctx.drawImage(
         figure_image, c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
   });
@@ -109,29 +115,42 @@ function draw(game_state) {
 }
 
 function handle_character_movement(game_state, character_i, movement) {
-  if (movement[0] == 0 && movement[1] == 0){
+  var is_player = game_state.characters[character_i].is_player;
+
+  if (is_player && movement[0] == 0 && movement[1] == 0){
     return;
   }
 
-  move_result = perform_character_movement(game_state, character_i, movement[0], movement[1]);
+  var is_last_character = character_i == game_state.characters.length -1;
+
+  var move_result = perform_character_movement(game_state, character_i, movement[0], movement[1]);
   if (move_result == MOVEMENT_NOT_READY) {
     return;
   }
 
-  // TODO: if player: record this move into a list
+  if (is_player) {
+    recorded_player_moves.push(movement);
+  }
 
   if (move_result == TRAP_COLLISION) {
-    console.log("someone died");
     death_sound.play();
     // we assume that character was removed from list (death)
-    game_state.active_character_i = game_state.active_character_i  % game_state.characters.length;
+    console.log("Someone died, active before: " + game_state.active_character_i);
+    game_state.active_character_i = game_state.active_character_i % game_state.characters.length;
+    console.log("active after: " + game_state.active_character_i);
   } else if (move_result == GOAL_COLLISION) {
     console.log("YOU WIN");
     game_state.game_over = true;
     victory_sound.play();
+  } else {
+    game_state.active_character_i = (game_state.active_character_i + 1)  % game_state.characters.length;
   }
 
-  game_state.active_character_i = (game_state.active_character_i + 1)  % game_state.characters.length;
+  if (is_last_character){
+    // As we looped around to index 0, we finished one round
+    game_state.round_index ++;
+    console.log("This was last character. updating round to " + game_state.round_index);
+  }
 
   player_movement_sound.play();
 }
@@ -141,14 +160,31 @@ function loop(timestamp) {
 
   if (!game_state.game_over) {
     if (game_state.characters.length == 0) {
-      // TODO restart game with one additional ghost (based on what you just did)
+      start_pos = game_state.start_position;
+      ghost_movement_plans = game_state.ghost_movement_plans;
+      console.log("Game ended. Characters: ");
+      console.log(game_state.characters);
+      ghost_movement_plans.push(recorded_player_moves);
+      console.log("Will use ghosts:")
+      console.log(ghost_movement_plans);
+      game_state = map_1_game_state(ghost_movement_plans);
+      recorded_player_moves = [];
+      console.log("Restarting game with state:");
+      console.log(game_state);
     }
 
-    active_character = game_state.characters[game_state.active_character_i];
-    // TODO move ghost according to its plan
-    ghost_movement = [-1, 0];
-    handle_character_movement(game_state, game_state.active_character_i,
-      active_character.is_player ? player_movement : ghost_movement);
+    var active_character = game_state.characters[game_state.active_character_i];
+    if (active_character.is_player) {
+      var movement = player_movement;
+    } else {
+      if (game_state.round_index < active_character.movement_plan.length ){
+        var movement = active_character.movement_plan[game_state.round_index];
+      }else {
+        var movement = [0, 0];
+      }
+    }
+
+    handle_character_movement(game_state, game_state.active_character_i, movement);
 
     if (active_character.is_player) {
       player_movement = [0, 0];
@@ -165,7 +201,7 @@ lastRender = 0
 window.requestAnimationFrame(loop)
 
 document.getElementById("btn-reset").onclick = function (e) {
-  game_state = map_1_game_state();
+  game_state = map_1_game_state([]);
   console.log("Game was reset");
 }
 

@@ -79,6 +79,14 @@ function new_character(position, is_player) {
   }
 }
 
+function new_ghost(position, movement_plan) {
+  return {
+    is_player: false,
+    position: position,
+    movement_plan: movement_plan,
+  };
+}
+
 function new_position(x, y) {
   return { "x": x, "y": y };
 }
@@ -122,15 +130,22 @@ function contains_movable_object(game_state, position) {
   return false;
 }
 
-function new_game_state({ grid_w, grid_h, active_character_i, characters, boxes, traps, obstacles,
+function new_game_state({ grid_w, grid_h, active_character_i, characters, ghost_movement_plans, boxes, traps, obstacles,
   key_door_pairs, goal_position } = {}) {
+  var start_position = new_position(characters[0].position.x, characters[0].position.y);
+  var ghosts = [];
+  ghost_movement_plans.forEach( plan => {
+    ghosts.push(new_ghost(new_position(start_position.x, start_position.y), plan));
+  });
   var game_state = {
     grid_w: grid_w,
     grid_h: grid_h,
     time_since_flip: 0,
     time_since_movement: 0,
     active_character_i: active_character_i,
-    characters: characters,
+    characters: ghosts.concat(characters),
+    ghost_movement_plans: ghost_movement_plans,
+    start_position: start_position,
     use_fire1: true,
     boxes: boxes,
     traps: traps,
@@ -138,6 +153,7 @@ function new_game_state({ grid_w, grid_h, active_character_i, characters, boxes,
     key_door_pairs: key_door_pairs,
     goal_position: goal_position,
     game_over: false,
+    round_index: 0,
   };
   return game_state;
 }
