@@ -42,7 +42,7 @@ function map_1_game_state() {
   return new_game_state({
       grid_w: 6,
       grid_h: 2,
-      player_position: new_position(2, 0),
+      characters: [new_character(new_position(2, 0), true)],
       traps: [new_position(0, 0)],
       obstacles: [
         new_position(0, 1),
@@ -79,9 +79,11 @@ function draw(game_state) {
     ctx.drawImage(game_state.use_fire1 ? fire1_image : fire2_image, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
   });
 
+  // draw all chars
+  character = game_state.characters[0]
   ctx.drawImage(
-    figure_image, game_state.player_position.x * cell_w,
-    game_state.player_position.y * cell_w, cell_w, cell_w);
+    figure_image, character.position.x * cell_w,
+    character.position.y * cell_w, cell_w, cell_w);
 
   for (var i = 0; i <= game_state.grid_w; i ++) {
     ctx.beginPath();
@@ -101,8 +103,10 @@ function loop(timestamp) {
   var elapsed_time = timestamp - lastRender;
 
   if (!game_state.game_over) {
+  // TODO handle all characters
     if (!(player_movement[0] == 0 && player_movement[1] == 0)) {
-      move_result = perform_player_movement(game_state, player_movement[0], player_movement[1]);
+      move_result = perform_player_movement(game_state,
+        game_state.characters[0], player_movement[0], player_movement[1]);
       if (move_result == TRAP_COLLISION) {
         console.log("YOU LOSE");
         game_state.game_over = true;
