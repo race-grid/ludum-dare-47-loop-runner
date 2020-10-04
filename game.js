@@ -55,7 +55,7 @@ function map_1_game_state() {
         new_position(4, 5),
         new_position(5, 5),
       ],
-      keys_and_doors: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
+      key_door_pairs: [{ "key": new_position(1, 0), "door": new_position(4, 0) }],
       goal_position: new_position(5, 0)
     });
 }
@@ -79,7 +79,7 @@ function draw(game_state) {
     ctx.fillRect(b.x * cell_w, b.y * cell_w, cell_w, cell_w, cell_w);
   });
 
-  game_state.keys_and_doors.forEach(o => {
+  game_state.key_door_pairs.forEach(o => {
     ctx.drawImage(key_image, o.key.x * cell_w, o.key.y * cell_w, cell_w, cell_w);
     ctx.drawImage(door_image, o.door.x * cell_w, o.door.y * cell_w, cell_w, cell_w);
   });

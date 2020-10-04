@@ -13,7 +13,7 @@ function perform_character_movement(game_state, character_i, dx, dy) {
 
   character = game_state.characters[character_i];
   const next_position = new_position(character.position.x + dx, character.position.y + dy);
-  if (!valid_next_position(game_state, next_position, dx, dy)) {
+  if (!is_valid_next_position(game_state, next_position, dx, dy)) {
     return;
   }
 
@@ -25,9 +25,9 @@ function perform_character_movement(game_state, character_i, dx, dy) {
     }
   }
 
-  for (var i = 0; i < game_state.keys_and_doors.length; i++) {
-    if (are_positions_equal(character.position, game_state.keys_and_doors[i].key)) {
-      game_state.keys_and_doors.splice(i, 1);
+  for (var i = 0; i < game_state.key_door_pairs.length; i++) {
+    if (are_positions_equal(character.position, game_state.key_door_pairs[i].key)) {
+      game_state.key_door_pairs.splice(i, 1);
     }
   }
 
@@ -43,7 +43,7 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   }
 }
 
-function valid_next_position(game_state, next_position, dx, dy) {
+function is_valid_next_position(game_state, next_position, dx, dy) {
   if (contains_immovable_object(game_state, next_position) ||
     !is_position_in_game_world(game_state, next_position)) {
     return false;
@@ -99,8 +99,8 @@ function contains_immovable_object(game_state, position) {
       return true;
     }
   }
-  for (var i = 0; i < game_state.keys_and_doors.length; i++) {
-    if (are_positions_equal(position, game_state.keys_and_doors[i].door)) {
+  for (var i = 0; i < game_state.key_door_pairs.length; i++) {
+    if (are_positions_equal(position, game_state.key_door_pairs[i].door)) {
       return true;
     }
   }
@@ -122,7 +122,7 @@ function contains_movable_object(game_state, position) {
 }
 
 function new_game_state({ grid_w, grid_h, active_character_i, characters, boxes, traps, obstacles,
-  keys_and_doors, goal_position } = {}) {
+  key_door_pairs, goal_position } = {}) {
   var game_state = {
     grid_w: grid_w,
     grid_h: grid_h,
@@ -134,7 +134,7 @@ function new_game_state({ grid_w, grid_h, active_character_i, characters, boxes,
     boxes: boxes,
     traps: traps,
     obstacles: obstacles,
-    keys_and_doors: keys_and_doors,
+    key_door_pairs: key_door_pairs,
     goal_position: goal_position,
     game_over: false,
   };
