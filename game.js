@@ -135,9 +135,7 @@ function handle_character_movement(game_state, character_i, movement) {
   if (move_result == TRAP_COLLISION) {
     death_sound.play();
     // we assume that character was removed from list (death)
-    console.log("Someone died, active before: " + game_state.active_character_i);
     game_state.active_character_i = game_state.active_character_i % game_state.characters.length;
-    console.log("active after: " + game_state.active_character_i);
   } else if (move_result == GOAL_COLLISION) {
     console.log("YOU WIN");
     game_state.game_over = true;
@@ -149,7 +147,6 @@ function handle_character_movement(game_state, character_i, movement) {
   if (is_last_character){
     // As we looped around to index 0, we finished one round
     game_state.round_index ++;
-    console.log("This was last character. updating round to " + game_state.round_index);
   }
 
   player_movement_sound.play();
@@ -160,17 +157,10 @@ function loop(timestamp) {
 
   if (!game_state.game_over) {
     if (game_state.characters.length == 0) {
-      start_pos = game_state.start_position;
       ghost_movement_plans = game_state.ghost_movement_plans;
-      console.log("Game ended. Characters: ");
-      console.log(game_state.characters);
       ghost_movement_plans.push(recorded_player_moves);
-      console.log("Will use ghosts:")
-      console.log(ghost_movement_plans);
       game_state = map_1_game_state(ghost_movement_plans);
       recorded_player_moves = [];
-      console.log("Restarting game with state:");
-      console.log(game_state);
     }
 
     var active_character = game_state.characters[game_state.active_character_i];
