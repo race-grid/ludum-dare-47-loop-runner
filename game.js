@@ -1,5 +1,11 @@
 console.log("Start of game.js");
 
+const STATE_PLAYING = "__PLAYING__";
+const STATE_BETWEEN_LOOPS = "__BETWEEN_LOOPS__";
+
+var current_state = STATE_PLAYING;
+var elapsed_time_since_loop_ended = 0;
+
 var player_movement = [0, 0];
 
 setup_input_handler(
@@ -7,6 +13,15 @@ setup_input_handler(
   function () { player_movement = [0, -1] },
   function () { player_movement = [-1, 0] },
   function () { player_movement = [0, 1] },
+  function () {
+    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_loop_ended > 1000) {
+      var ghost_movement_plans = game_state.ghost_movement_plans;
+      ghost_movement_plans.push(recorded_player_moves);
+      game_state = map_1_game_state(ghost_movement_plans);
+      recorded_player_moves = [];
+      current_state = STATE_PLAYING;
+    }
+  }
 );
 
 var canvas = document.getElementById("canvas");
@@ -125,21 +140,25 @@ function handle_character_movement(game_state, character_i, movement) {
 
   if (is_last_character) {
     game_state.move_index++;
-    document.getElementById("move-text").textContent=game_state.move_index + 1;
+    if (game_state.move_index < MAX_NUM_MOVES) {
+      document.getElementById("move-text").textContent=game_state.move_index + 1;
+    }
   }
 
   player_movement_sound.play();
 }
 
-function loop(timestamp) {
-  var elapsed_time = timestamp - lastRender;
+function update_playing(elapsed_time) {
 
   if (!game_state.game_over) {
     if (game_state.characters.length == 0 || game_state.move_index == MAX_NUM_MOVES) {
-      var ghost_movement_plans = game_state.ghost_movement_plans;
-      ghost_movement_plans.push(recorded_player_moves);
-      game_state = map_1_game_state(ghost_movement_plans);
-      recorded_player_moves = [];
+      ctx.font = '24px serif';
+      ctx.fillStyle = "#000000";
+      ctx.fillText("Out of moves...", 50, 320);
+      ctx.fillText("press any key to start next loop", 50, 350);
+      current_state = STATE_BETWEEN_LOOPS;
+      elapsed_time_since_loop_ended = 0;
+      return;
     }
 
     var active_character = game_state.characters[game_state.active_character_i];
@@ -161,6 +180,22 @@ function loop(timestamp) {
   }
   update_objects(game_state, elapsed_time);
   draw(game_state);
+}
+
+function update_between_loops(elapsed_time) {
+  elapsed_time_since_loop_ended += elapsed_time;
+}
+
+function loop(timestamp) {
+  var elapsed_time = timestamp - lastRender;
+
+  if (current_state == STATE_PLAYING){
+    update_playing(elapsed_time);
+  } else if (current_state == STATE_BETWEEN_LOOPS) {
+    update_between_loops(elapsed_time);
+  } else {
+    console.warning("Invalid current state: " + current_state);
+  }
 
   lastRender = timestamp;
   window.requestAnimationFrame(loop);
