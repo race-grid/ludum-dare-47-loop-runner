@@ -125,6 +125,7 @@ function handle_character_movement(game_state, character_i, movement) {
 
   if (is_last_character) {
     game_state.round_index++;
+    document.getElementById("round-text").textContent=game_state.round_index + 1;
   }
 
   player_movement_sound.play();
