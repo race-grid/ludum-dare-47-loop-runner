@@ -25,6 +25,7 @@ setup_input_handler(
       current_state = STATE_PLAYING;
       loop_index++;
       document.getElementById("loop-text").textContent = loop_index + 1;
+      update_move_bars_between_loops();
     } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > TRANSITION_DELAY) {
       current_map_index++;
       reset_game();
@@ -46,7 +47,6 @@ const MAP_FACTORY_FUNCTIONS = [
 ];
 
 function get_current_map_game_state(ghost_movement_plans) {
-  document.getElementById("move-text").textContent = 1;
   return MAP_FACTORY_FUNCTIONS[current_map_index](ghost_movement_plans);
 }
 
@@ -80,6 +80,10 @@ var w = 400;
 var h = 400;
 var cell_w = 40;
 const MAX_NUM_MOVES = 10;
+
+const CHARACTER_MOVES_BARS_CONTAINER = document.getElementById("character-moves-bars-container");
+const CHARACTER_MOVES_BARS = document.getElementsByClassName("character-moves-bar");
+
 
 // This list is filled up with moves as you play, and then used for ghost
 recorded_player_moves = [];
@@ -143,6 +147,47 @@ function draw(game_state) {
   }
 }
 
+function update_move_cell_graphics(move_cell, movement) {
+  move_cell.classList.add("move-cell-visited");
+  if (movement[0] == 1 && movement[1] == 0) {
+    move_cell.textContent = ">";
+  } else if (movement[0] == -1 && movement[1] == 0) {
+    move_cell.textContent = "<";
+  } else if (movement[0] == 0 && movement[1] == 1) {
+    move_cell.textContent = "v";
+  } else if (movement[0] == 0 && movement[1] == -1) {
+    move_cell.textContent = "^";
+  } else {
+    move_cell.textContent = "";
+  }
+}
+
+function update_move_bars_between_loops() {
+  for (var i = 0; i < CHARACTER_MOVES_BARS.length; i++) {
+    var bar = CHARACTER_MOVES_BARS[i];
+    for (var j = 0; j < bar.children.length; j++) {
+      var cell = bar.children[j];
+      cell.classList = [];
+    }
+    //clear_move_cell_graphics(PLAYER_MOVES_BAR.children[i]);
+  }
+  var last_bar = CHARACTER_MOVES_BARS[CHARACTER_MOVES_BARS.length - 1];
+  var cloned_bar = last_bar.cloneNode(true);
+
+  for (var j = 0; j < cloned_bar.children.length; j++) {
+    var cell = cloned_bar.children[j];
+    cell.classList = [];
+    cell.textContent = "";
+  }
+
+  CHARACTER_MOVES_BARS_CONTAINER.appendChild(cloned_bar);
+}
+
+function clear_move_cell_graphics(move_cell) {
+  move_cell.classList = [];
+  move_cell.textContent = "";
+}
+
 function handle_character_movement(game_state, character_i, movement) {
   var is_player = game_state.characters[character_i].is_player;
 
@@ -163,6 +208,8 @@ function handle_character_movement(game_state, character_i, movement) {
   if (is_player) {
     recorded_player_moves.push(movement);
   }
+  move_cell = CHARACTER_MOVES_BARS[character_i].children[game_state.move_index];
+  update_move_cell_graphics(move_cell, movement);
 
   if (move_result == TRAP_COLLISION) {
     move_sound.play();
@@ -187,9 +234,6 @@ function update_character_and_move_index(game_state) {
   game_state.active_character_i = (game_state.active_character_i + 1) % game_state.characters.length;
   if (game_state.active_character_i == 0) {
     game_state.move_index++;
-    if (game_state.move_index < MAX_NUM_MOVES) {
-      document.getElementById("move-text").textContent = game_state.move_index + 1;
-    }
   }
 }
 
@@ -289,6 +333,18 @@ function reset_game() {
   document.getElementById("mapname-text").textContent = "Map " + (current_map_index + 1) + ": " + game_state.map_name;
   loop_index = 0;
   document.getElementById("loop-text").textContent = loop_index + 1;
+
+  // Remove all ghost moves bars
+  while (CHARACTER_MOVES_BARS_CONTAINER.children.length > 1) {
+    console.log(CHARACTER_MOVES_BARS_CONTAINER);
+    console.log("removing one");
+    CHARACTER_MOVES_BARS_CONTAINER.removeChild(CHARACTER_MOVES_BARS_CONTAINER.lastChild);
+  }
+
+  var cells = CHARACTER_MOVES_BARS[0].children;
+  for (var i = 0; i < cells.length; i ++) {
+    clear_move_cell_graphics(cells[i]);
+  }
 }
 
 lastRender = 0

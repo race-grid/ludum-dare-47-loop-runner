@@ -21,6 +21,29 @@
         font-size: 22px;
       }
 
+      #character-moves-bars-container {
+        border: 3px solid #007700;
+      }
+
+      .character-moves-bar {
+        width: 400px;
+        height: 25px;
+      }
+
+      .character-moves-bar > span {
+        border: 1px dotted;
+        width: 38px;
+        height: 23px;
+        line-height: 23px;
+        float: left;
+        text-align: center;
+      }
+
+      .character-moves-bar > span.move-cell-visited {
+        background: #EAFFDA;
+        border: 1px solid;
+      }
+
       h1, h2, h3, p, button { font-family: Consolas, monaco, monospace; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Consolas, monaco, monospace; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Consolas, monaco, monospace; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Consolas, monaco, monospace; font-size: 21px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 30px; } pre { font-family: Consolas, monaco, monospace; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; }
     </style>
   </head>
@@ -31,9 +54,21 @@
       (loop <span id="loop-text"></span>)
     </h3>
     <canvas id="canvas" style="border=1px" width="400px" height="400px"></canvas>
-    <p>
-      Move: <span id="move-text"></span>
-    </p>
+    <div id="character-moves-bars-container">
+      <div class="character-moves-bar">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+    <br>
     <div>
       <button id="btn-reset">Retry map</button>
     </div>
