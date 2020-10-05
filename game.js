@@ -37,6 +37,7 @@ var current_map_index = 0;
 
 const MAP_FACTORY_FUNCTIONS = [
   intro_map,
+  loop_intro_map,
   learn_button_map,
   learn_fire_map,
   learn_box_map,

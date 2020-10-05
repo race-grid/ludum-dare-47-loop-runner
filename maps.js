@@ -1,5 +1,22 @@
 function intro_map(ghost_movement_plans) {
     return new_game_state({
+        map_name: "Race to the finish",
+        grid_w: 6,
+        grid_h: 1,
+        active_character_i: 0,
+        start_position: new_position(2, 0),
+        boxes: [],
+        traps: [],
+        obstacles: [],
+        ghost_movement_plans: ghost_movement_plans,
+        key_door_pairs: [{ "key": new_position(0, 0), "door": new_position(4, 0) }],
+        button_door_pairs: [],
+        goal_position: new_position(5, 0)
+    });
+}
+
+function loop_intro_map(ghost_movement_plans) {
+    return new_game_state({
         map_name: "Learning the loops",
         grid_w: 10,
         grid_h: 1,
