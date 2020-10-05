@@ -11,7 +11,7 @@
         display: table-cell;
         vertical-align: middle;
       }
-      h1 {
+      h1, h2 {
         text-align: center;
       }
       canvas {
@@ -22,15 +22,15 @@
 
   <body>
     <h1 id="mapname-text"></h1>
+    <h2>
+      (loop <span id="loop-text"></span>)
+    </h2>
     <canvas id="canvas" style="border=1px" width="400px" height="400px"></canvas>
-    <p>
-      Loop: <span id="loop-text"></span>
-    </p>
     <p>
       Move: <span id="move-text"></span>
     </p>
     <div>
-      <button id="btn-reset">Reset game</button>
+      <button id="btn-reset">Retry map</button>
     </div>
   </body>
 
