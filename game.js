@@ -4,6 +4,8 @@ const STATE_PLAYING = "__PLAYING__";
 const STATE_BETWEEN_LOOPS = "__BETWEEN_LOOPS__";
 const STATE_BETWEEN_MAPS = "__BETWEEN_MAPS__";
 
+const TRANSITION_DELAY = 700;
+
 var elapsed_time_since_transition_started = 0;
 
 var player_movement = [0, 0];
@@ -15,7 +17,7 @@ setup_input_handler(
   function () { player_movement = [-1, 0] },
   function () { player_movement = [0, 1] },
   function () {
-    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_transition_started > 300) {
+    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_transition_started > TRANSITION_DELAY) {
       var ghost_movement_plans = game_state.ghost_movement_plans;
       ghost_movement_plans.push(recorded_player_moves);
       game_state = get_current_map_game_state(ghost_movement_plans);
@@ -23,7 +25,7 @@ setup_input_handler(
       current_state = STATE_PLAYING;
       loop_index++;
       document.getElementById("loop-text").textContent = loop_index + 1;
-    } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > 300) {
+    } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > TRANSITION_DELAY) {
       current_map_index++;
       reset_game();
     }
@@ -188,7 +190,7 @@ function update_playing(elapsed_time) {
     ctx.font = '24px serif';
     ctx.fillStyle = "#000000";
     ctx.fillText("Map cleared!", 50, 320);
-    ctx.fillText("press any key to go to next map", 50, 350);
+
     current_state = STATE_BETWEEN_MAPS;
     elapsed_time_since_transition_started = 0;
     return;
@@ -197,7 +199,7 @@ function update_playing(elapsed_time) {
       ctx.font = '24px serif';
       ctx.fillStyle = "#000000";
       ctx.fillText("Out of moves...", 50, 320);
-      ctx.fillText("press any key to start next loop", 50, 350);
+
       current_state = STATE_BETWEEN_LOOPS;
       elapsed_time_since_transition_started = 0;
       return;
@@ -233,7 +235,19 @@ function are_all_characters_dead(game_state) {
   return true;
 }
 
-function update_during_transition(elapsed_time) {
+function update_during_loop_transition(elapsed_time) {
+  if (elapsed_time_since_transition_started < TRANSITION_DELAY
+      && elapsed_time_since_transition_started + elapsed_time >= TRANSITION_DELAY){
+    ctx.fillText("press any key to start next loop", 50, 350);
+  }
+  elapsed_time_since_transition_started += elapsed_time;
+}
+
+function update_during_map_transition(elapsed_time) {
+  if (elapsed_time_since_transition_started < TRANSITION_DELAY
+      && elapsed_time_since_transition_started + elapsed_time >= TRANSITION_DELAY){
+    ctx.fillText("press any key to go to next map", 50, 350);
+  }
   elapsed_time_since_transition_started += elapsed_time;
 }
 
@@ -242,8 +256,10 @@ function loop(timestamp) {
 
   if (current_state == STATE_PLAYING) {
     update_playing(elapsed_time);
-  } else if (current_state == STATE_BETWEEN_LOOPS || current_state == STATE_BETWEEN_MAPS) {
-    update_during_transition(elapsed_time);
+  } else if (current_state == STATE_BETWEEN_LOOPS) {
+    update_during_loop_transition(elapsed_time);
+  } else if (current_state == STATE_BETWEEN_MAPS) {
+    update_during_map_transition(elapsed_time);
   } else {
     console.error("Invalid current state: " + current_state);
   }
