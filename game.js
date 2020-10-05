@@ -36,6 +36,8 @@ setup_input_handler(
 var current_map_index = 0;
 
 const MAP_FACTORY_FUNCTIONS = [
+  intermediate_timing_map,
+
   intro_map,
   learn_button_map,
   learn_fire_map,
@@ -63,13 +65,22 @@ var fire2_image = new Image();
 fire2_image.src = "assets/fire2.svg";
 
 var key_image = new Image();
-key_image.src = "assets/key.svg"
+key_image.src = "assets/key.svg";
+
+var button_image = new Image();
+button_image.src = "assets/button.svg";
+
+var button_pushed_image = new Image();
+button_pushed_image.src = "assets/button_pushed.svg";
 
 var door_image = new Image();
-door_image.src = "assets/door.svg"
+door_image.src = "assets/door.svg";
+
+var box_image = new Image();
+box_image.src = "assets/box.svg";
 
 var flag_image = new Image();
-flag_image.src = "assets/flag.svg"
+flag_image.src = "assets/flag.svg";
 
 var move_sound = new Audio('assets/move.wav');
 var move_into_immovable_sound = new Audio('assets/move_into_immovable.wav');
@@ -102,10 +113,7 @@ function draw(game_state) {
     ctx.fillRect(o.x * cell_w, o.y * cell_w, cell_w, cell_w, cell_w);
   });
 
-  ctx.fillStyle = "#00AAAA";
-  game_state.boxes.forEach(b => {
-    ctx.fillRect(b.x * cell_w, b.y * cell_w, cell_w, cell_w, cell_w);
-  });
+ 
   game_state.traps.forEach(o => {
     ctx.drawImage(game_state.use_fire1 ? fire1_image : fire2_image, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
   });
@@ -114,11 +122,15 @@ function draw(game_state) {
     ctx.drawImage(door_image, p.door.x * cell_w, p.door.y * cell_w, cell_w, cell_w);
   });
   game_state.button_door_pairs.forEach(p => {
-    ctx.fillStyle = "#AA00AA";
-    ctx.fillRect(p.button.x * cell_w, p.button.y * cell_w, cell_w, cell_w, cell_w);
     if (!p.is_open) {
+      ctx.drawImage(button_image, p.button.x * cell_w, p.button.y * cell_w, cell_w, cell_w);
       ctx.drawImage(door_image, p.door.x * cell_w, p.door.y * cell_w, cell_w, cell_w);
+    } else {
+      ctx.drawImage(button_pushed_image, p.button.x * cell_w, p.button.y * cell_w, cell_w, cell_w);
     }
+  });
+  game_state.boxes.forEach(b => {
+    ctx.drawImage(box_image, b.x * cell_w, b.y * cell_w, cell_w, cell_w);
   });
 
   game_state.characters.forEach(c => {

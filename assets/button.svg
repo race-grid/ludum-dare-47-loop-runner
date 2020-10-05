@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 25 25">
+<defs>
+<linearGradient id="a" y2="24" gradientUnits="userSpaceOnUse" x2="24" y1=".12" x1=".12">
+<stop stop-color="#333" offset="0"/>
+<stop stop-color="#564" offset=".46"/>
+<stop stop-color="#ab8" offset=".54"/>
+<stop stop-color="#cdb" offset="1"/>
+</linearGradient>
+<linearGradient id="c" y2="-11.79" gradientUnits="userSpaceOnUse" x2="-11.29" y1="-25.5" x1="-25">
+<stop stop-color="#333" stop-opacity="0" offset="0"/>
+<stop stop-color="#564" offset=".85"/>
+<stop stop-color="#ab8" stop-opacity="0" offset="1"/>
+</linearGradient>
+<linearGradient id="b" y2="0" gradientUnits="userSpaceOnUse" x2="12" y1="24" x1="12">
+<stop stop-color="#dea" offset="0"/>
+<stop stop-color="#dea" offset="0.7"/>
+<stop stop-color="#bc7" offset="1"/>
+</linearGradient>
+</defs>
+<g stroke-width="2">
+<rect rx="1.91" transform="scale(-1)" height="22" width="22" stroke="url(#c)" y="-23.75" x="-23.2" stroke-width="2.5" fill="none"/>
+<rect rx="1.91" height="22" width="22" stroke="url(#a)" y="1.08" x="1.08" fill="url(#b)"/>
+</g>
+</svg>
