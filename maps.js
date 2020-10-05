@@ -1,6 +1,6 @@
-function map_1_game_state(ghost_movement_plans) {
+function intro_map(ghost_movement_plans) {
     return new_game_state({
-        map_name: "Map 1: Learning the loops",
+        map_name: "Learning the loops",
         grid_w: 10,
         grid_h: 1,
         active_character_i: 0,
@@ -15,9 +15,9 @@ function map_1_game_state(ghost_movement_plans) {
     });
 }
 
-function map_2_game_state(ghost_movement_plans) {
+function learn_button_map(ghost_movement_plans) {
     return new_game_state({
-        map_name: "Map 2: Keep it down",
+        map_name: "Keep it down",
         grid_w: 7,
         grid_h: 3,
         active_character_i: 0,
@@ -32,9 +32,9 @@ function map_2_game_state(ghost_movement_plans) {
     });
 }
 
-function map_3_game_state(ghost_movement_plans) {
+function learn_fire_map(ghost_movement_plans) {
     return new_game_state({
-        map_name: "Map 3: One for the team",
+        map_name: "One for the team",
         grid_w: 9,
         grid_h: 7,
         active_character_i: 0,
@@ -52,9 +52,9 @@ function map_3_game_state(ghost_movement_plans) {
     });
 }
 
-function map_4_game_state(ghost_movement_plans) {
+function learn_box_map(ghost_movement_plans) {
     return new_game_state({
-        map_name: "Map 4: Push it",
+        map_name: "Push it",
         grid_w: 6,
         grid_h: 5,
         active_character_i: 0,
@@ -75,9 +75,9 @@ function map_4_game_state(ghost_movement_plans) {
     });
 }
 
-function map_5_game_state(ghost_movement_plans) {
+function intermediate_box_button_map(ghost_movement_plans) {
     return new_game_state({
-        map_name: "Map 5: Congestion control",
+        map_name: "Congestion control",
         grid_w: 6,
         grid_h: 5,
         active_character_i: 0,
