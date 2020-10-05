@@ -120,7 +120,7 @@ function box_button_combination_map(ghost_movement_plans) {
         grid_h: 5,
         active_character_i: 0,
         start_position: new_position(0, 2),
-        boxes: [new_position(1, 4)],
+        boxes: [new_position(2, 4)],
         traps: [new_position(1,1), new_position(3,2), new_position(4,3)],
         obstacles: [
             new_position(6, 0), new_position(7, 0),
