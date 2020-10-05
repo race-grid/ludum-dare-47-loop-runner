@@ -68,7 +68,8 @@ door_image.src = "assets/door.svg"
 var flag_image = new Image();
 flag_image.src = "assets/flag.svg"
 
-var player_movement_sound = new Audio('assets/beep.mp3');
+var move_sound = new Audio('assets/move.wav');
+var move_into_immovable_sound = new Audio('assets/move_into_immovable.wav');
 var death_sound = new Audio('assets/explosion.mp3');
 var victory_sound = new Audio('assets/victory.mp3');
 
@@ -162,16 +163,22 @@ function handle_character_movement(game_state, character_i, movement) {
   }
 
   if (move_result == TRAP_COLLISION) {
+    move_sound.play();
     death_sound.play();
   } else if (move_result == GOAL_COLLISION) {
     console.log("YOU WIN");
     game_state.has_won = true;
+    move_sound.play();
     victory_sound.play();
+  } else if (move_result == IMMOVABLE_COLLISION) {
+    move_into_immovable_sound.play();
+  } else {
+    move_sound.play();
   }
 
   update_character_and_move_index(game_state);
 
-  player_movement_sound.play();
+
 }
 
 function update_character_and_move_index(game_state) {
