@@ -1,8 +1,13 @@
 const TRAP_COLLISION = "__TRAP_COLLISION__";
 const GOAL_COLLISION = "__GOAL_COLLISION__";
+const IMMOVABLE_COLLISION = "__IMMOVABLE_COLLISION__";
 const MOVEMENT_NOT_READY = "__MOVEMENT_NOT_READY__";
 
 const MOVEMENT_COOLDOWN = 250;
+
+var push_box_sound = new Audio('assets/push_block.wav');
+var pickup_key_sound = new Audio('assets/pickup_key.wav');
+var door_closes_sound = new Audio('assets/door_closes.wav');
 
 function perform_character_movement(game_state, character_i, dx, dy) {
 
@@ -13,7 +18,7 @@ function perform_character_movement(game_state, character_i, dx, dy) {
 
   character = game_state.characters[character_i];
   if (!is_valid_movement(game_state, character, dx, dy)) {
-    return;
+    return IMMOVABLE_COLLISION;
   }
   const previous_position = character.position;
   const next_position = new_position(character.position.x + dx, character.position.y + dy);
@@ -22,12 +27,14 @@ function perform_character_movement(game_state, character_i, dx, dy) {
   for (var i = 0; i < game_state.boxes.length; i++) {
     if (are_positions_equal(character.position, game_state.boxes[i])) {
       game_state.boxes[i] = new_position(next_position.x + dx, next_position.y + dy);
+      push_box_sound.play();
     }
   }
 
   for (var i = 0; i < game_state.key_door_pairs.length; i++) {
     if (are_positions_equal(character.position, game_state.key_door_pairs[i].key)) {
       game_state.key_door_pairs.splice(i, 1);
+      pickup_key_sound.play();
     }
   }
 
@@ -35,8 +42,10 @@ function perform_character_movement(game_state, character_i, dx, dy) {
     const pair = game_state.button_door_pairs[i];
     if (are_positions_equal(character.position, pair.button)) {
       pair.is_open = true;
+      pickup_key_sound.play();
     } else if (are_positions_equal(previous_position, pair.button)) {
       pair.is_open = false;
+      door_closes_sound.play();
     }
   }
 

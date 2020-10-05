@@ -4,6 +4,8 @@ const STATE_PLAYING = "__PLAYING__";
 const STATE_BETWEEN_LOOPS = "__BETWEEN_LOOPS__";
 const STATE_BETWEEN_MAPS = "__BETWEEN_MAPS__";
 
+const TRANSITION_DELAY = 700;
+
 var elapsed_time_since_transition_started = 0;
 
 var player_movement = [0, 0];
@@ -15,7 +17,7 @@ setup_input_handler(
   function () { player_movement = [-1, 0] },
   function () { player_movement = [0, 1] },
   function () {
-    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_transition_started > 300) {
+    if (current_state == STATE_BETWEEN_LOOPS && elapsed_time_since_transition_started > TRANSITION_DELAY) {
       var ghost_movement_plans = game_state.ghost_movement_plans;
       ghost_movement_plans.push(recorded_player_moves);
       game_state = get_current_map_game_state(ghost_movement_plans);
@@ -23,7 +25,7 @@ setup_input_handler(
       current_state = STATE_PLAYING;
       loop_index++;
       document.getElementById("loop-text").textContent = loop_index + 1;
-    } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > 300) {
+    } else if (current_state == STATE_BETWEEN_MAPS && elapsed_time_since_transition_started > TRANSITION_DELAY) {
       current_map_index++;
       reset_game();
     }
@@ -66,7 +68,8 @@ door_image.src = "assets/door.svg"
 var flag_image = new Image();
 flag_image.src = "assets/flag.svg"
 
-var player_movement_sound = new Audio('assets/beep.mp3');
+var move_sound = new Audio('assets/move.wav');
+var move_into_immovable_sound = new Audio('assets/move_into_immovable.wav');
 var death_sound = new Audio('assets/explosion.mp3');
 var victory_sound = new Audio('assets/victory.mp3');
 
@@ -160,23 +163,31 @@ function handle_character_movement(game_state, character_i, movement) {
   }
 
   if (move_result == TRAP_COLLISION) {
+    move_sound.play();
     death_sound.play();
   } else if (move_result == GOAL_COLLISION) {
     console.log("YOU WIN");
     game_state.has_won = true;
+    move_sound.play();
     victory_sound.play();
+  } else if (move_result == IMMOVABLE_COLLISION) {
+    move_into_immovable_sound.play();
+  } else {
+    move_sound.play();
   }
 
   update_character_and_move_index(game_state);
 
-  player_movement_sound.play();
+
 }
 
 function update_character_and_move_index(game_state) {
   game_state.active_character_i = (game_state.active_character_i + 1) % game_state.characters.length;
   if (game_state.active_character_i == 0) {
     game_state.move_index++;
-    document.getElementById("move-text").textContent = game_state.move_index + 1;
+    if (game_state.move_index < MAX_NUM_MOVES) {
+      document.getElementById("move-text").textContent = game_state.move_index + 1;
+    }
   }
 }
 
@@ -186,7 +197,11 @@ function update_playing(elapsed_time) {
     ctx.font = '24px serif';
     ctx.fillStyle = "#000000";
     ctx.fillText("Map cleared!", 50, 320);
-    ctx.fillText("press any key to go to next map", 50, 350);
+
+    // completed the last map
+    if (current_map_index == MAP_FACTORY_FUNCTIONS.length - 1) {
+      window.location.href = "ending.html";
+    }
     current_state = STATE_BETWEEN_MAPS;
     elapsed_time_since_transition_started = 0;
     return;
@@ -195,7 +210,7 @@ function update_playing(elapsed_time) {
       ctx.font = '24px serif';
       ctx.fillStyle = "#000000";
       ctx.fillText("Out of moves...", 50, 320);
-      ctx.fillText("press any key to start next loop", 50, 350);
+
       current_state = STATE_BETWEEN_LOOPS;
       elapsed_time_since_transition_started = 0;
       return;
@@ -231,7 +246,19 @@ function are_all_characters_dead(game_state) {
   return true;
 }
 
-function update_during_transition(elapsed_time) {
+function update_during_loop_transition(elapsed_time) {
+  if (elapsed_time_since_transition_started < TRANSITION_DELAY
+      && elapsed_time_since_transition_started + elapsed_time >= TRANSITION_DELAY){
+    ctx.fillText("press any key to start next loop", 50, 350);
+  }
+  elapsed_time_since_transition_started += elapsed_time;
+}
+
+function update_during_map_transition(elapsed_time) {
+  if (elapsed_time_since_transition_started < TRANSITION_DELAY
+      && elapsed_time_since_transition_started + elapsed_time >= TRANSITION_DELAY){
+    ctx.fillText("press any key to go to next map", 50, 350);
+  }
   elapsed_time_since_transition_started += elapsed_time;
 }
 
@@ -240,8 +267,10 @@ function loop(timestamp) {
 
   if (current_state == STATE_PLAYING) {
     update_playing(elapsed_time);
-  } else if (current_state == STATE_BETWEEN_LOOPS || current_state == STATE_BETWEEN_MAPS) {
-    update_during_transition(elapsed_time);
+  } else if (current_state == STATE_BETWEEN_LOOPS) {
+    update_during_loop_transition(elapsed_time);
+  } else if (current_state == STATE_BETWEEN_MAPS) {
+    update_during_map_transition(elapsed_time);
   } else {
     console.error("Invalid current state: " + current_state);
   }
