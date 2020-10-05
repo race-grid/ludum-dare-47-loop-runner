@@ -136,10 +136,11 @@ function draw(game_state) {
 
   game_state.characters.forEach(c => {
     if (c.is_alive) {
-      if (!c.is_player) {
-        ctx.fillStyle = "#EEFFDD";
-        ctx.fillRect(c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
-      }
+      ctx.fillStyle = c.is_player ? "#DDFFBB" : "#FFDDBB";
+      ctx.beginPath();
+      ctx.arc(c.position.x * cell_w + cell_w/2, c.position.y * cell_w + cell_w/2, cell_w/3,
+        0, 2 * Math.PI);
+      ctx.fill();
       ctx.drawImage(
         figure_image, c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
     }
