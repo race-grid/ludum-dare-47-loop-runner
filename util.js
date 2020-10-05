@@ -3,7 +3,7 @@ const GOAL_COLLISION = "__GOAL_COLLISION__";
 const IMMOVABLE_COLLISION = "__IMMOVABLE_COLLISION__";
 const MOVEMENT_NOT_READY = "__MOVEMENT_NOT_READY__";
 
-const MOVEMENT_COOLDOWN = 250;
+const MOVEMENT_COOLDOWN = 150;
 
 var push_box_sound = new Audio('assets/push_block.wav');
 var pickup_key_sound = new Audio('assets/pickup_key.wav');

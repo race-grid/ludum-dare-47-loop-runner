@@ -199,6 +199,12 @@ function clear_move_cell_graphics(move_cell) {
   move_cell.textContent = "";
 }
 
+function play_sound(sound) {
+  sound.pause();
+  sound.currentTime = 0;
+  sound.play();
+}
+
 function handle_character_movement(game_state, character_i, movement) {
   var is_player = game_state.characters[character_i].is_player;
 
@@ -223,17 +229,17 @@ function handle_character_movement(game_state, character_i, movement) {
   update_move_cell_graphics(move_cell, movement);
 
   if (move_result == TRAP_COLLISION) {
-    move_sound.play();
-    death_sound.play();
+    play_sound(move_sound);
+    play_sound(death_sound);
   } else if (move_result == GOAL_COLLISION) {
     console.log("YOU WIN");
     game_state.has_won = true;
-    move_sound.play();
-    victory_sound.play();
+    play_sound(move_sound);
+    play_sound(victory_sound);
   } else if (move_result == IMMOVABLE_COLLISION) {
-    move_into_immovable_sound.play();
+    play_sound(move_into_immovable_sound);
   } else {
-    move_sound.play();
+    play_sound(move_sound);
   }
 
   update_character_and_move_index(game_state);
