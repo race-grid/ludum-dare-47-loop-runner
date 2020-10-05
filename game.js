@@ -136,7 +136,7 @@ function draw(game_state) {
   game_state.characters.forEach(c => {
     if (c.is_alive) {
       if (!c.is_player) {
-        ctx.fillStyle = "#FF0000";
+        ctx.fillStyle = "#EEFFDD";
         ctx.fillRect(c.position.x * cell_w, c.position.y * cell_w, cell_w, cell_w);
       }
       ctx.drawImage(
