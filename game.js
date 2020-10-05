@@ -36,8 +36,6 @@ setup_input_handler(
 var current_map_index = 0;
 
 const MAP_FACTORY_FUNCTIONS = [
-  intermediate_timing_map,
-
   intro_map,
   learn_button_map,
   learn_fire_map,
