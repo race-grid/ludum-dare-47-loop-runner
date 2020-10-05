@@ -257,16 +257,19 @@ function update_character_and_move_index(game_state) {
   }
 }
 
+var cumulative_round_count = 0;
+
 function update_playing(elapsed_time) {
 
   if (game_state.has_won) {
+    cumulative_round_count += game_state.ghost_movement_plans.length
     ctx.font = '24px serif';
     ctx.fillStyle = "#000000";
     ctx.fillText("Map cleared!", 50, 320);
 
     // completed the last map
     if (current_map_index == MAP_FACTORY_FUNCTIONS.length - 1) {
-      window.location.href = "ending.html";
+      window.location.href = "ending.html?score=" + cumulative_round_count;
     }
     current_state = STATE_BETWEEN_MAPS;
     elapsed_time_since_transition_started = 0;
