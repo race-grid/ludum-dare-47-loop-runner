@@ -96,6 +96,29 @@ function intermediate_box_button_map(ghost_movement_plans) {
     });
 }
 
+function box_button_combination_map(ghost_movement_plans) {
+    return new_game_state({
+        map_name: "Hold position",
+        grid_w: 8,
+        grid_h: 6,
+        active_character_i: 0,
+        start_position: new_position(0, 2),
+        boxes: [new_position(3, 2)],
+        traps: [],
+        obstacles: [
+            new_position(6, 0), new_position(7, 0),
+            new_position(6, 1), new_position(7, 1),
+            new_position(6, 3), new_position(7, 3),
+            new_position(6, 4), new_position(7, 4),
+            new_position(6, 5), new_position(7, 5)
+        ],
+        ghost_movement_plans: ghost_movement_plans,
+        key_door_pairs: [],
+        button_door_pairs: [{ "button": new_position(3, 3), "door": new_position(6, 2), "is_open": false }],
+        goal_position: new_position(7, 2)
+    });
+}
+
 function intermediate_timing_map(ghost_movement_plans) {
     return new_game_state({
         map_name: "Future proof",
@@ -152,7 +175,7 @@ function advanced_order_map(ghost_movement_plans) {
         traps: [new_position(2, 2), new_position(2, 3), new_position(2, 4), new_position(2, 5)],
         obstacles: [
             new_position(0, 0), new_position(1, 0), new_position(2, 0), new_position(4, 0),
-            new_position(0, 1), 
+            new_position(0, 1),
             new_position(0, 2), new_position(1, 2), new_position(4, 2),
             new_position(0, 3), new_position(1, 3), new_position(4, 3),
             new_position(0, 4), new_position(1, 4), new_position(4, 4),

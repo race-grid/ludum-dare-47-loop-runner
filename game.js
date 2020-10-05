@@ -41,6 +41,7 @@ const MAP_FACTORY_FUNCTIONS = [
   learn_fire_map,
   learn_box_map,
   intermediate_box_button_map,
+  box_button_combination_map,
   intermediate_timing_map,
   learn_order_map,
   advanced_order_map,
