@@ -37,6 +37,12 @@ function perform_character_movement(game_state, character_i, dx, dy) {
       pair.is_open = true;
     } else if (are_positions_equal(previous_position, pair.button)) {
       pair.is_open = false;
+      for (var j = 0; j < game_state.characters.length; j++) {
+        if (are_positions_equal(game_state.characters[j].position, pair.door)) {
+          game_state.characters[j].is_alive = false;
+          return TRAP_COLLISION;
+        }
+      }
     }
   }
 
