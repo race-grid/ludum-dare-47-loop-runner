@@ -14,31 +14,26 @@
       h1, h2 {
         text-align: center;
       }
-      canvas {
-        border-style: solid;
-      }
-      button {
-        font-size: 22px;
-      }
+
+      h1 { font-family: Consolas, monaco, monospace; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Consolas, monaco, monospace; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Consolas, monaco, monospace; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Consolas, monaco, monospace; font-size: 21px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 30px; } pre { font-family: Consolas, monaco, monospace; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; }
     </style>
   </head>
 
   <body>
-    <h1 id="mapname-text"></h1>
-    <h2>
-      (loop <span id="loop-text"></span>)
-    </h2>
-    <canvas id="canvas" style="border=1px" width="400px" height="400px"></canvas>
+    <h1>LD47 - Stuck in the loop</h1>
+    <br>
+    <br>
+    <br>
     <p>
-      Move: <span id="move-text"></span>
+      Move with WASD and get to the flag!
     </p>
-    <div>
-      <button id="btn-reset">Retry map</button>
-    </div>
+    <p>
+      You only have 10 moves. After that, the loop starts over.
+    </p>
+    <br>
+    <h3>
+      <a href="game.html">START GAME</a>
+    </h3>
   </body>
 
-  <script src="input.js"></script>
-  <script src="util.js"></script>
-  <script src="maps.js"></script>
-  <script src="game.js"></script>
 </html>
