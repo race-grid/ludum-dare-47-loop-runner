@@ -100,17 +100,16 @@ function box_button_combination_map(ghost_movement_plans) {
     return new_game_state({
         map_name: "Hold position",
         grid_w: 8,
-        grid_h: 6,
+        grid_h: 5,
         active_character_i: 0,
         start_position: new_position(0, 2),
-        boxes: [new_position(3, 2)],
-        traps: [],
+        boxes: [new_position(1, 4)],
+        traps: [new_position(1,1), new_position(3,2), new_position(4,3)],
         obstacles: [
             new_position(6, 0), new_position(7, 0),
             new_position(6, 1), new_position(7, 1),
             new_position(6, 3), new_position(7, 3),
             new_position(6, 4), new_position(7, 4),
-            new_position(6, 5), new_position(7, 5)
         ],
         ghost_movement_plans: ghost_movement_plans,
         key_door_pairs: [],
