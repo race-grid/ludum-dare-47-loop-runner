@@ -1,35 +1,88 @@
 <!DOCTYPE HTML>
 <html>
-  <head>
-    <title>LD47 - Loop Runner</title>
-    <style>
-      html {
-        display: table;
-        margin: auto;
-      }
-      body {
-        display: table-cell;
-        vertical-align: middle;
-      }
-      h1, h2 {
-        text-align: center;
-      }
 
-      h1 { font-family: Consolas, monaco, monospace; font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Consolas, monaco, monospace; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Consolas, monaco, monospace; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Consolas, monaco, monospace; font-size: 21px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 30px; } pre { font-family: Consolas, monaco, monospace; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; }
-    </style>
-  </head>
+<head>
+  <title>LD47 - Loop Runner</title>
+  <style>
+    html {
+      display: table;
+      margin: auto;
+    }
 
-  <body>
-    <h1>Congratulations!</h1>
-    <br>
-    <br>
-    <p>
-      You broke the loop!
-    </p>
-    <br>
-    <h3>
-      <a href="index.html">TO START SCREEN</a>
-    </h3>
-  </body>
+    body {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    h1,
+    h2 {
+      text-align: center;
+    }
+
+    h1 {
+      font-family: Consolas, monaco, monospace;
+      font-size: 24px;
+      font-style: normal;
+      font-variant: normal;
+      font-weight: 700;
+      line-height: 26.4px;
+    }
+
+    h3 {
+      font-family: Consolas, monaco, monospace;
+      font-size: 14px;
+      font-style: normal;
+      font-variant: normal;
+      font-weight: 700;
+      line-height: 15.4px;
+    }
+
+    p {
+      font-family: Consolas, monaco, monospace;
+      font-size: 14px;
+      font-style: normal;
+      font-variant: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    blockquote {
+      font-family: Consolas, monaco, monospace;
+      font-size: 21px;
+      font-style: normal;
+      font-variant: normal;
+      font-weight: 400;
+      line-height: 30px;
+    }
+
+    pre {
+      font-family: Consolas, monaco, monospace;
+      font-size: 13px;
+      font-style: normal;
+      font-variant: normal;
+      font-weight: 400;
+      line-height: 18.5714px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Congratulations!</h1>
+  <br>
+  <br>
+  <p>
+    You broke the loop!
+  </p>
+  <p>
+    <span id="loop-text"></span> runners were not as fortunate, and are still stuck in the loop
+    <script>
+      document.getElementById("loop-text").textContent = window.location.search.split("=")[1];
+    </script>
+  </p>
+  <br>
+  <h3>
+    <a href="index.html">TO START SCREEN</a>
+  </h3>
+</body>
 
 </html>
