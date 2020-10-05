@@ -96,9 +96,9 @@ function intermediate_box_button_map(ghost_movement_plans) {
     });
 }
 
-function map_6_game_state(ghost_movement_plans) {
+function intermediate_timing_map(ghost_movement_plans) {
     return new_game_state({
-        map_name: "Map 6: Future proof",
+        map_name: "Future proof",
         grid_w: 5,
         grid_h: 5,
         active_character_i: 0,
@@ -117,25 +117,54 @@ function map_6_game_state(ghost_movement_plans) {
     });
 }
 
-function map_7_game_state(ghost_movement_plans) {
+function learn_order_map(ghost_movement_plans) {
     return new_game_state({
-        map_name: "Map 7: Congestion control",
-        grid_w: 4,
-        grid_h: 6,
+        map_name: "To order!",
+        grid_w: 6,
+        grid_h: 4,
         active_character_i: 0,
-        start_position: new_position(1, 5),
+        start_position: new_position(0, 1),
         boxes: [],
-        traps: [new_position(2, 1), new_position(2, 2),new_position(2, 3)],
+        traps: [],
         obstacles: [
-            new_position(0, 0), new_position(1, 0), new_position(3, 0),
-            new_position(0, 1), new_position(1, 1), new_position(3, 1),
-            new_position(0, 2), new_position(1, 2), new_position(3, 2),
-            new_position(0, 3), new_position(1, 3), new_position(3, 3),
-            new_position(0, 4), new_position(1, 4), new_position(3, 4),
+            new_position(0, 0), new_position(2, 0), new_position(3, 0), new_position(4, 0),
+            new_position(0, 2), new_position(1, 2), new_position(2, 2), new_position(3, 2), new_position(4, 2),
+            new_position(0, 3), new_position(1, 3),
         ],
         ghost_movement_plans: ghost_movement_plans,
-        key_door_pairs: [{ "key": new_position(3, 5), "door": new_position(2, 4) }],
+        key_door_pairs: [
+            { "key": new_position(1, 0), "door": new_position(5, 1) },
+            { "key": new_position(5, 0), "door": new_position(4, 3) }
+        ],
         button_door_pairs: [],
-        goal_position: new_position(2, 0)
+        goal_position: new_position(2, 3)
+    });
+}
+
+function advanced_order_map(ghost_movement_plans) {
+    return new_game_state({
+        map_name: "The loop is on fire",
+        grid_w: 5,
+        grid_h: 7,
+        active_character_i: 0,
+        start_position: new_position(4, 1),
+        boxes: [],
+        traps: [new_position(2, 2), new_position(2, 3), new_position(2, 4), new_position(2, 5)],
+        obstacles: [
+            new_position(0, 0), new_position(1, 0), new_position(2, 0), new_position(4, 0),
+            new_position(0, 1), 
+            new_position(0, 2), new_position(1, 2), new_position(4, 2),
+            new_position(0, 3), new_position(1, 3), new_position(4, 3),
+            new_position(0, 4), new_position(1, 4), new_position(4, 4),
+            new_position(0, 5), new_position(1, 5), new_position(4, 5),
+            new_position(4, 6),
+        ],
+        ghost_movement_plans: ghost_movement_plans,
+        key_door_pairs: [],
+        button_door_pairs: [
+            { "button": new_position(3, 0), "door": new_position(3, 5), "is_open": false },
+            { "button": new_position(1, 1), "door": new_position(3, 5), "is_open": false }
+        ],
+        goal_position: new_position(0, 6)
     });
 }
