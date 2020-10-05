@@ -100,7 +100,9 @@ function draw(game_state) {
   game_state.boxes.forEach(b => {
     ctx.fillRect(b.x * cell_w, b.y * cell_w, cell_w, cell_w, cell_w);
   });
-
+  game_state.traps.forEach(o => {
+    ctx.drawImage(game_state.use_fire1 ? fire1_image : fire2_image, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
+  });
   game_state.key_door_pairs.forEach(p => {
     ctx.drawImage(key_image, p.key.x * cell_w, p.key.y * cell_w, cell_w, cell_w);
     ctx.drawImage(door_image, p.door.x * cell_w, p.door.y * cell_w, cell_w, cell_w);
@@ -111,9 +113,6 @@ function draw(game_state) {
     if (!p.is_open) {
       ctx.drawImage(door_image, p.door.x * cell_w, p.door.y * cell_w, cell_w, cell_w);
     }
-  });
-  game_state.traps.forEach(o => {
-    ctx.drawImage(game_state.use_fire1 ? fire1_image : fire2_image, o.x * cell_w, o.y * cell_w, cell_w, cell_w);
   });
 
   game_state.characters.forEach(c => {
