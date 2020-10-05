@@ -198,6 +198,10 @@ function update_playing(elapsed_time) {
     ctx.fillStyle = "#000000";
     ctx.fillText("Map cleared!", 50, 320);
 
+    // completed the last map
+    if (current_map_index == MAP_FACTORY_FUNCTIONS.length - 1) {
+      window.location.href = "ending.html";
+    }
     current_state = STATE_BETWEEN_MAPS;
     elapsed_time_since_transition_started = 0;
     return;
