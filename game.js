@@ -176,7 +176,9 @@ function update_character_and_move_index(game_state) {
   game_state.active_character_i = (game_state.active_character_i + 1) % game_state.characters.length;
   if (game_state.active_character_i == 0) {
     game_state.move_index++;
-    document.getElementById("move-text").textContent = game_state.move_index + 1;
+    if (game_state.move_index < MAX_NUM_MOVES) {
+      document.getElementById("move-text").textContent = game_state.move_index + 1;
+    }
   }
 }
 
